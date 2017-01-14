@@ -20,7 +20,6 @@ def addTuples(t1, t2):
 	No idea what happens if different sizes
 	@jacob
 	'''
-	
 	return tuple(x+y for x,y in zip(t1,t2))
 
 def diffColors(a, b):
@@ -33,11 +32,7 @@ def diffColors(a, b):
     Difference is computed for each R, G, B of color
     Ranges from 0 (same color) to 765 (max difference)
     '''
-    diff = 0
-    for x,y in zip(a,b):
-        diff += abs(x - y)
-
-    return diff
+    return sum(abs(x - y) for x,y in zip(a,b))
 
 
 def diffPoints(image, p1, p2):
