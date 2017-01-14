@@ -183,3 +183,16 @@ def extrapolateParallelogram(a, b, c):
 	parallelogram = (point1, point2, point3, point4)
 
 	return sorted(parallelogram)
+	def kinaEquals(num1, num2, leniency=.2):
+		'''
+		@params
+			num1 is a number
+			num2 is also a number
+			leniency is how lenient you're willing to be
+		returns a boolean
+			true if num1 is pretty close to num2
+			false is num1 is pretty far from num2
+		'''
+		n2_max = num1*(1+leniency)
+		n2_min = num1*(1-leniency)
+		return n2 < n2_max and n2 > n2_min
