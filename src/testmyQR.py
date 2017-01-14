@@ -27,4 +27,16 @@ print(myqr.diffPoints(im2, (10, 10), (100, 10)))
 #test  distance
 a1 = (3,0)
 b1 = (0,0)
-print(myqr.distance(a,b))#should yield three
+print(myqr.distance(a1,b1))#should yield three
+
+#test getPixelClusters
+im = Image.open("../TestImages/TestClusters.png")
+print(myqr.getPixelClusters(im, (0, 15), (1,0)))
+
+#test extrapolateParallelogram
+p1 = (5,5)
+p2 = (10,6)
+p3 = (4,10)
+p4 = (9,11)
+print(myqr.extrapolateParallelogram(p1,p2,p3))
+print(myqr.extrapolateParallelogram(p2,p4,p3))
