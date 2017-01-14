@@ -19,7 +19,18 @@ def diffColors(a, b):
 	return diff
 
 
+def diffPoints(image, p1, p2):
+	'''
+	@params:
+		image is the PIL immage to sample from
+		p1 is a point-tuple
+		p2 is a point-tuple
 
+	Delegate call to diffColors on two points in an image
+	'''
+	a = image.getpixel(p1)
+	b = image.getpixel(p2)
+	return diffColors(a,b)
 
 
 def findQR(image):
