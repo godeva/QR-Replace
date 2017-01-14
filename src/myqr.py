@@ -130,3 +130,25 @@ def isInbounds(image, point):
     size = image.size
     #return all([dim > loc for dim,loc in zip(size,point)]) jacob wrote this hideous line of code and said fight me and its bad
     return all([size[i] > point[i] for i in range(2)]) or min(point) =< 0
+def distance(a, b):
+	'''
+	@params:
+		a is a point-tuple
+		b is another point-tuple
+	returns a double representing distance between the two points
+	'''
+	return sum(abs(x-y)**(2.0) for x,y in zip(a,b))**(.5)
+
+
+def extrapolateParallelogram(a, b, c):
+	'''
+	@params:
+		a is one point-tuple in the parallelogram
+		b is another point-tuple
+		c is the third point-tuple
+	returns a sequence of four points representing vertices of parallelogram
+		formed by the points
+	'''
+	ab = (abs(a[0] - b[0]), abs(a[1] - b[1]))
+	bc = (abs(b[0] - c[0]), abs(b[1] - c[1]))
+	ac = (abs(a[0] - c[0]), abs(a[1] - c[1]))
