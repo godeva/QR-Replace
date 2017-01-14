@@ -96,3 +96,16 @@ def insertQR(image, bounds, data):
     the new qr code should fit the bounds and seem natural (like it was the original imge)
     '''
     pass #@todo(someone) implement this
+
+def isInbounds(image, point):
+    '''
+    @params:
+        image is the image that we'll be messing with
+        point is a tuple-point that might
+    returns a boolean
+        true if the point is inside the image
+        flase if the point is outside the image
+    '''
+    size = image.size
+    #return all([dim > loc for dim,loc in zip(size,point)]) jacob wrote this hideous line of code and said fight me and its bad
+    return all([size[i] > point[i] for i in range(2)]) or min(point) =< 0
