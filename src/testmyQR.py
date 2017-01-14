@@ -42,6 +42,8 @@ print(myqr.extrapolateParallelogram(p2,p4,p3))
 
 #test warpImage
 im = Image.open("../TestImages/basicQRcode.png")
-parallelogram = [(200,100),(300, 110),(320, 210), (220, 200)]
+parallelogram = [(75,50),(150,60),(150,150), (50,150)]
+parallelogram2 = [(100,100),(300,100),(300,300), (100,300)]
 warped = myqr.warpImage(im2, im, parallelogram)
+im.show()
 warped.show()
