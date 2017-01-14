@@ -10,6 +10,19 @@ point-tuples are 2 element tuples structed as (x,y)
 vectors are equivalent to point-tuples, but with a different context
 '''
 
+def addTuples(t1, t2):
+	'''
+	@params:
+		t1 is a tuple
+		t2 is a tuple
+	Adds the contents of each tuple, element by element.
+	EX: addTuples((1,2),(4,6)) -> (5,8)
+	No idea what happens if different sizes
+	@jacob
+	'''
+	
+	return tuple(x+y for x,y in zip(t1,t2))
+
 def diffColors(a, b):
     '''
     @params:
