@@ -6,5 +6,5 @@ A script that locates and replaces QR codes in images.
 
 **Dependencies:**
 
-* Pillow @todo(aaron) add a link to it
-* qrcode @todo(aaron) add a link to it
+* Pillow https://pypi.python.org/pypi/Pillow/4.0.0
+* qrcode https://pypi.python.org/pypi/qrcode
