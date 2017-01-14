@@ -13,6 +13,7 @@ color-tuples are 3 element tuples structred as (R,G,B), 0-255 each
 point-tuples are 2 element tuples structed as (x,y)
 (note that this is consistent with pillows use of points)
 vectors are equivalent to point-tuples, but with a different context
+cluster-tuple is a (point-tuple, int) where the int is cluster size
 
 quadrilateral-tuples are 4 element tuples structured as (point-tuple,point-tuple,point-tuple,point-tuple)
 '''
@@ -52,11 +53,10 @@ def getPixelClusters(image, start, direction):
 		direction is a vector defining direction to travel
 
 	Scan over an image from a starting point until end of image is reached.
-	Scan results are returned as a list of tuples containing the start point of
-	the cluster, and the length of that cluster.
+	Scan results are returned as a list of cluster-tuples
 	EX:
 	[((5,0), 15), ((5,15), 7), ...]
-	   ^--point-tuple      ^--length of cluster
+	   ^--cluster-tuples
 
 	direction as a vector allows this function to be used for vertical, horizontal,
 	diagonal, or any angle of traversal, at varying levels of precision.
@@ -237,9 +237,8 @@ def scanImage(image):
 		image is the image that we'll be messing with
 	returns a list of tuple-points which are the centers of any QR code corner identifiers
 	'''
-	lineclusters = []
-	for i in range(image.size[1]): #goes through each row of pixels in the image
-		lineclusters.append(getPixelClusters(image,(0,i),(1,0))) #grabs the clusters from one line
+	#lineclusters will be a list of lists (one per horizontal line) of cluster-tuples
+	lineclusters = [getPixelClusters(image, (0,i), (1,0)) for i in range(image.size[1])]
 
 	iclusters = [] #interesting clusters
 	for line in lineclusters:
