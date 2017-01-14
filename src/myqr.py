@@ -20,10 +20,21 @@ def addTuples(t1, t2):
 		t2 is a tuple
 	Adds the contents of each tuple, element by element.
 	EX: addTuples((1,2),(4,6)) -> (5,8)
-	No idea what happens if different sizes
 	@jacob
 	'''
-	return tuple(x+y for x,y in zip(t1,t2))
+	return piecewiseMap(t1, t2, lambda x,y: x+y)
+
+def piecewiseMap(t1, t2, fn):
+	'''
+	@params:
+		t1 is a tuple
+		t2 is a tuple
+		fn is a function taking two parameters, and returning a single value
+	Maps corresponding params of t1 and t2 by index.
+	Calls supplied function as fn(t1[i], t2[i]) for each i in len(tuples)
+	Returns a tuple of min((len(t1), len(t2)))
+	'''
+	return tuple(fn(x,y) for x,y in zip(t1,t2))
 
 def diffColors(a, b):
 	'''
@@ -141,8 +152,83 @@ def distance(a, b):
 		b is another point-tuple
 	returns a double representing distance between the two points
 	'''
-	return sum((x-y)**(2.0) for x,y in zip(a,b))**(0.5)
+	return math.hypot(a.x - b.x, a.y - b.y)
 
+def angleOf(vector):
+	'''
+	@params:
+		vector is a vector-tuple
+	returns a double representing the vectors clockwise rotation from the x axis
+		values range from [0,2pi)
+	'''
+	at = atan(vector[1], vector[0])
+	if at < 0:
+		at += 2*math.pi
+	return at
+
+def clockwiseRotation(from_v, to_v):
+	'''
+	@params:
+		from_v is a vector-tuple
+		to_v is a vector-tuple
+	returns a double representing the total rotation from vector from_v
+		to the vector to_v. Value returned is in range [0,2pi).
+		Used to determine which point is the "upper" clockwise leg of a triangle
+	'''
+	a = angleOf(from_v) - angleOf(to_v)
+	if a < 0`:
+		a += 2 * math.pi
+	return a
+
+def extrapolateParallelogramJ(a, b, c):
+	'''
+	@params:
+		a is one of the detected clusters in the image
+		b ditto
+		c ditto
+	returns a list of four points representing vertices of parallelogram
+		in clockwise order. The new point is generated based on the previous 3.
+	'''
+
+	def deduceKnownCorner(a, b, c): #Get points as (corner, another, another)
+		segs = ((a,b), (b,c), (a,c))
+		sorted_distance = sorted(segs, key=lambda seg: distance(seg[0], seg[1]))
+		longest_seg = sorted_distance[2]
+		return sorted((a,b,c), key=lambda p: p in longest_seg)
+
+	def orderByRotation(a, b, c): #Orders points of triangle clockwise. First point is anchor. Tuple of tuple-point
+		cp = deduceKnownCorner(a,b,c)
+		corner = cp[0]
+		a = cp[1]
+		b = cp[2]
+
+		#Get vectors from corner to each leg
+		v_corner_a = piecewiseMap(corner, a, lambda x,y: y - x)
+		v_corner_b = piecewiseMap(corner, b, lambda x,y: y - x)
+
+		#Find which comes vector 'first', clockwise from x axis
+		#Determined by which has lower clockwise angle
+		rab = clockwiseRotation(v_corner_a, v_corner_b)
+		rba = clockwiseRotation(v_corner_b, v_corner_a)
+
+		if rab < rba:
+			return (corner, a, b)
+		else:
+			return (corner, b, a)
+
+	def genThirdPoint(ordered_points): #Takes result of orderByRotation, returns final point
+		#Just generate a parallelogram u dingaling
+		corner = ordered_points[0]
+		leg1 = ordered_points[1]
+		leg2 = ordered_points[2]
+		vec_corner_leg1 = piecewiseMap(corner, leg1, lambda x,y: y - x)
+
+		#Add this vec to leg2 to get final point of pgram.
+		return addTuples(leg2, vec_corner_leg1)
+
+	op = orderByRotation(a,b,c)
+	np = genThirdPoint(op)
+	return (op[0], op[1], np, op[2])
 
 def extrapolateParallelogram(a, b, c):
 	'''
