@@ -3,6 +3,7 @@ from PIL import Image
 import qrcode
 import numpy as np
 from numpy.linalg import inv
+import itertools
 
 '''
 NOTE:
@@ -47,14 +48,13 @@ def diffPoints(image, p1, p2):
 		p1 is a point-tuple
 		p2 is a point-tuple
 
-
 	Delegate call to diffColors on two points in an image
 	'''
 	a = image.getpixel(p1)
 	b = image.getpixel(p2)
 	return diffColors(a,b)
 
-def getPixelClusters(image, start, direction): #do we want to add an end parameter that defaults to end of line?
+def getPixelClusters(image, start, direction):
 	'''
 	@params:
 		image is the PIL image to sample from
@@ -126,13 +126,15 @@ def isInBounds(image, point):
 	'''
 	@params:
 		image is the image that we'll be messing with
-		point is a tuple-point that might
+		point is a tuple-point that we are testing
 	returns a boolean
-		true if the point is inside the image
-		flase if the point is outside the image
+		True if the point is inside the image
+		False if the point is outside the image
 	'''
 	size = image.size
-	return all([dim > loc for dim,loc in zip(size,point)]) #jacob wrote this hideous line of code and said fight me and its bad
+	p = point
+	return p.x >= 0 and p.y >= 0 and p.x < size.width and p.y < size.height
+	#return all([dim > loc for dim,loc in zip(size,point)]) #jacob wrote this hideous line of code and said fight me and its bad
 	#return all([size[i] > point[i] for i in range(2)]) or min(point) =< 0
 
 def distance(a, b):
@@ -142,7 +144,7 @@ def distance(a, b):
 		b is another point-tuple
 	returns a double representing distance between the two points
 	'''
-	return sum(abs(x-y)**(2.0) for x,y in zip(a,b))**(0.5)
+	return sum((x-y)**(2.0) for x,y in zip(a,b))**(0.5)
 
 
 def extrapolateParallelogram(a, b, c):
@@ -186,6 +188,7 @@ def extrapolateParallelogram(a, b, c):
 	parallelogram = (point1, point2, point3, point4)
 
 	return sorted(parallelogram)
+
 
 def warpImage(background, image, parallelogram):
 	'''
