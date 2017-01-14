@@ -131,9 +131,9 @@ def isInBounds(image, point):
 		True if the point is inside the image
 		False if the point is outside the image
 	'''
-	size = image.size
+	width, height = image.size
 	p = point
-	return p.x >= 0 and p.y >= 0 and p.x < size.width and p.y < size.height
+	return p[0] >= 0 and p[1] >= 0 and p[0] < width and p[1] < height
 	#return all([dim > loc for dim,loc in zip(size,point)]) #jacob wrote this hideous line of code and said fight me and its bad
 	#return all([size[i] > point[i] for i in range(2)]) or min(point) =< 0
 
