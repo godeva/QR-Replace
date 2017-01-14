@@ -66,13 +66,33 @@ def getPixelClusters(image, start, direction):
     diagonal, or any angle of traversal, at varying levels of precision.
     '''
     ret_vals = [] #Create list to add clusters to
-    curr_point = start
+    last_point = start
+	next_point = addTuples(last_point, direction)
+
+	#Track current cluster
+	cluster_start = last_point
+	cluster_size = 1
 
     threshold = 50
     #Continue scanning until curr_point is outside of image
-    #while isInBounds(image, curr_point):
-        #curr_
-		#todo(jacob): Continue writing this
+    while isInBounds(image, next_point):
+		delta = diffPoints(next_point)
+
+		#Check if delta below thresh; if so, Continue
+		if delta < thresh:
+			cluster_size += 1
+		else:
+			#Else, add to ret vals
+			ret_vals.push_back((cluster_start, cluster_size))
+			cluster_start = next_point
+			cluster_size = 1
+
+		last_point = next_point
+		next_point = addTuples(last_point, direction)
+
+	#Add last value to clusters
+	ret_vals.push_back((cluster_start, cluster_size))
+	return ret_vals
 
 
 def findQR(image):
