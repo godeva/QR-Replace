@@ -149,10 +149,10 @@ def extrapolateParallelogram(a, b, c):
 		a is one point-tuple in the parallelogram
 		b is another point-tuple
 		c is the third point-tuple
-	returns a sequence of four points representing vertices of parallelogram
+	returns a list of four points representing vertices of parallelogram
 		formed by the points, that most closely resembles a square
-		i.e. ((xa,ya), (xb,yb), (xc,yc), (xd,yd))
-		points are returned in sorted order(first by x then y)
+		i.e. [(xa,ya), (xb,yb), (xc,yc), (xd,yd)]
+		points are returned in sorted order(first by x then y if x's tie)
 	'''
 	dist = [distance(a,b), distance(b,c), distance(a,c)]
 	maxIndex = dist.index(max(dist))
@@ -171,6 +171,7 @@ def extrapolateParallelogram(a, b, c):
 	p3 = addTuples(tuple(x-y for x,y in zip(point2, point3)), point1)
 	p4 = addTuples(tuple(y-x for x,y in zip(point2, point3)), point1)
 
+	#if they're equal, that's the new point.
 	if p1 == p4:
 		point4 = p1
 	if p1 == p3:
@@ -183,3 +184,16 @@ def extrapolateParallelogram(a, b, c):
 	parallelogram = (point1, point2, point3, point4)
 
 	return sorted(parallelogram)
+
+def warpImage(background, image, parallelogram):
+	'''
+	@params:
+		background is unchanged image
+		image is image to be warped
+		parallelogram is the coordinates to warp the image to, starting at upper
+			left and going clockwise
+	returns a new image that is the composition of background and image
+	 	after image has been warped
+	'''
+	
+	return image.transform(background.size, Image.AFFINE, affine)
