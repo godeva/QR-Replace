@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-import pillow
+from __future__ import print_function
+from PIL import Image
 import qrcode
+
+
 
 def findQR(image):
 	'''
@@ -25,4 +28,6 @@ def insertQR(image, bounds, data):
 	'''
 	inserts a QR code into the image at the specified bounds
 	the new qr code should fit the bounds and seem natural (like it was the original imge)
-	
+	'''
+im = Image.open("basicQRcode.png")
+im.show()
