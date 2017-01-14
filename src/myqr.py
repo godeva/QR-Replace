@@ -30,7 +30,7 @@ def diffColors(a, b):
 def diffPoints(image, p1, p2):
 	'''
 	@params:
-		image is the PIL immage to sample from
+		image is the PIL image to sample from
 		p1 is a point-tuple
 		p2 is a point-tuple
 
