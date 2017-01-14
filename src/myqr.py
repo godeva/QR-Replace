@@ -204,12 +204,6 @@ def extrapolateParallelogram(a, b, c):
 					matches.append(scanthis[3][1]/2 + scanthis[3][1][0]) #adds the middle of the middle of the scan to the matches
 			iclusters.append(matches)
 
-		'''OK
-		SO NOW WE HAVE THE MIDPOINT OF EVERY INTERESTING CLUSTER
-		NEED TO FIND THE MIDPOINT OF EVERY CLUSTER OF INTERESTING CLSUTERS
-		AND THEN RETURN THOSE POINTS
-		@todo(someone, probably aaron) code this
-		'''
 		cluster_points = [] #this is a list of cluster points that we will be returning
 		current_line = -1 #we start at -1 because i do +1 at the beginning
 		while current_line < image.size[1]:
