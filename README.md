@@ -1,8 +1,6 @@
 # QR-Replacer
 
-A script that locates and replaces QR codes in images.
-
-
+The idea of the hackathon project QR-Replace is to take an existing image that contains a QR Code and replaces the image with the a correctly oriented QR Code using a python script.
 
 **Dependencies:**
 
