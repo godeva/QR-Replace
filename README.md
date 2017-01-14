@@ -6,3 +6,4 @@ The idea of the hackathon project QR-Replace is to take an existing image that c
 
 * Pillow https://pypi.python.org/pypi/Pillow/4.0.0
 * qrcode https://pypi.python.org/pypi/qrcode
+* numpy https://pypi.python.org/pypi/numpy/1.12.0rc2
