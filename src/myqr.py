@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-import PIL
+from PIL import Image
 import qrcode
+
 """
 NOTE:
 color-tuples are 3 element tuples structred as (R,G,B), 0-255 each
@@ -59,7 +60,6 @@ def getPixelClusters(image, start, direction):
 	ret_vals = [] #Create list to add clusters to
 	curr_point = start
 	pass #todo(jacob): do this
-
 
 def findQR(image):
 	'''
