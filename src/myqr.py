@@ -2,6 +2,14 @@
 from PIL import Image
 import qrcode
 
+"""
+NOTE:
+color-tuples are 3 element tuples structred as (R,G,B), 0-255 each
+point-tuples are 2 element tuples structed as (x,y)
+(note that this is consistent with pillows use of points)
+vectors are equivalent to point-tuples, but with a different context
+"""
+
 def diffColors(a, b):
 	'''
 	@params:
@@ -19,6 +27,39 @@ def diffColors(a, b):
 	return diff
 
 
+def diffPoints(image, p1, p2):
+	'''
+	@params:
+		image is the PIL immage to sample from
+		p1 is a point-tuple
+		p2 is a point-tuple
+
+	Delegate call to diffColors on two points in an image
+	'''
+	a = image.getpixel(p1)
+	b = image.getpixel(p2)
+	return diffColors(a,b)
+
+def getPixelClusters(image, start, direction):
+	'''
+	@params:
+		image is the PIL image to sample from
+		start is a point-tuple defining where to begin scanning clusters
+		direction is a vector defining direction to travel
+
+	Scan over an image from a starting point until end of image is reached.
+	Scan results are returned as a list of tuples containing the start point of
+	the cluster, and the length of that cluster.
+	EX:
+	[((5,0), 15), ((5,15), 7), ...]
+	   ^--point-tuple      ^--length of cluster
+
+	direction as a vector allows this function to be used for vertical, horizontal,
+	diagonal, or any angle of traversal, at varying levels of precision.
+	'''
+	ret_vals = [] #Create list to add clusters to
+	curr_point = start
+	pass #todo(jacob): do this
 
 def findQR(image):
 	'''
