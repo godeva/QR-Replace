@@ -2,6 +2,7 @@
 import myqr
 from PIL import Image
 import qrcode
+import mathutil
 
 #load a basic image for processing. (we can only handle RGB images)
 im = Image.open("../TestImages/basicQRcode.png")
@@ -23,6 +24,9 @@ print(myqr.diffColors(a,b))#should yield 3
 print(myqr.diffPoints(im, (10, 10), (100, 10)))
 print(myqr.diffPoints(im2, (10, 10), (100, 10)))
 
+#test kindaEquals
+print(mathutil.kindaEquals(5,5))
+
 #test  distance
 a1 = (3,0)
 b1 = (0,0)
@@ -43,7 +47,7 @@ print(myqr.extrapolateParallelogram(p2,p4,p3))
 #test warpImage
 im = Image.open("../TestImages/basicQRcode.png")
 parallelogram = [(75,50),(150,60),(150,150), (50,150)]
-parallelogram2 = [(100,100),(300,100),(300,300), (100,300)]
-warped = myqr.warpImage(im2, im, parallelogram)
+parallelogram2 = [(250,250),(400,120),(641,300), (440,440)]
+warped = myqr.warpImage(im2, im, parallelogram2)
 im.show()
 warped.show()

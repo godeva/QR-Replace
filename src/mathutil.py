@@ -1,4 +1,4 @@
-
+import math
 
 def addTuples(t1, t2):
 	'''
@@ -45,7 +45,7 @@ def distance(a, b):
 		b is another point-tuple
 	returns a double representing distance between the two points
 	'''
-	return math.hypot(a.x - b.x, a.y - b.y)
+	return math.hypot(a[0] - b[0], a[1] - b[1])
 
 def angleOf(vector):
 	'''
@@ -54,7 +54,7 @@ def angleOf(vector):
 	returns a double representing the vectors clockwise rotation from the x axis
 		values range from [0,2pi)
 	'''
-	at = atan(vector[1], vector[0])
+	at = math.atan2(vector[1], vector[0])
 	if at < 0:
 		at += 2*math.pi
 	return at
@@ -69,7 +69,7 @@ def clockwiseRotation(from_v, to_v):
 		Used to determine which point is the "upper" clockwise leg of a triangle
 	'''
 	a = angleOf(from_v) - angleOf(to_v)
-	if a < 0`:
+	if a < 0:
 		a += 2 * math.pi
 	return a
 
