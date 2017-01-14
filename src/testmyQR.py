@@ -5,12 +5,11 @@ import qrcode
 
 #load a basic image for processing. (we can only handle RGB images)
 im = Image.open("../TestImages/basicQRcode.png")
-
 im = im.convert("RGB")
 im2 = Image.open("../TestImages/tiltedQRcode.jpg")
 
 #test findQR
-print(myqr.findQR(im))
+#print(myqr.findQR(im))
 
 #test insertQR
 #print(myqr.insertQR(im), bounds, data)
@@ -40,3 +39,11 @@ p3 = (4,10)
 p4 = (9,11)
 print(myqr.extrapolateParallelogram(p1,p2,p3))
 print(myqr.extrapolateParallelogram(p2,p4,p3))
+
+#test warpImage
+im = Image.open("../TestImages/basicQRcode.png")
+parallelogram = [(75,50),(150,60),(150,150), (50,150)]
+parallelogram2 = [(100,100),(300,100),(300,300), (100,300)]
+warped = myqr.warpImage(im2, im, parallelogram)
+im.show()
+warped.show()

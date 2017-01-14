@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 from PIL import Image
 import qrcode
+import numpy as np
+from numpy.linalg import inv
+import itertools
 
 '''
 NOTE:
@@ -45,14 +48,13 @@ def diffPoints(image, p1, p2):
 		p1 is a point-tuple
 		p2 is a point-tuple
 
-
 	Delegate call to diffColors on two points in an image
 	'''
 	a = image.getpixel(p1)
 	b = image.getpixel(p2)
 	return diffColors(a,b)
 
-def getPixelClusters(image, start, direction): #do we want to add an end parameter that defaults to end of line?
+def getPixelClusters(image, start, direction):
 	'''
 	@params:
 		image is the PIL image to sample from
@@ -124,13 +126,15 @@ def isInBounds(image, point):
 	'''
 	@params:
 		image is the image that we'll be messing with
-		point is a tuple-point that might
+		point is a tuple-point that we are testing
 	returns a boolean
-		true if the point is inside the image
-		flase if the point is outside the image
+		True if the point is inside the image
+		False if the point is outside the image
 	'''
-	size = image.size
-	return all([dim > loc for dim,loc in zip(size,point)]) #jacob wrote this hideous line of code and said fight me and its bad
+	width, height = image.size
+	p = point
+	return p[0] >= 0 and p[1] >= 0 and p[0] < width and p[1] < height
+	#return all([dim > loc for dim,loc in zip(size,point)]) #jacob wrote this hideous line of code and said fight me and its bad
 	#return all([size[i] > point[i] for i in range(2)]) or min(point) =< 0
 
 def distance(a, b):
@@ -140,7 +144,7 @@ def distance(a, b):
 		b is another point-tuple
 	returns a double representing distance between the two points
 	'''
-	return sum(abs(x-y)**(2.0) for x,y in zip(a,b))**(0.5)
+	return sum((x-y)**(2.0) for x,y in zip(a,b))**(0.5)
 
 
 def extrapolateParallelogram(a, b, c):
@@ -149,10 +153,10 @@ def extrapolateParallelogram(a, b, c):
 		a is one point-tuple in the parallelogram
 		b is another point-tuple
 		c is the third point-tuple
-	returns a sequence of four points representing vertices of parallelogram
+	returns a list of four points representing vertices of parallelogram
 		formed by the points, that most closely resembles a square
-		i.e. ((xa,ya), (xb,yb), (xc,yc), (xd,yd))
-		points are returned in sorted order(first by x then y)
+		i.e. [(xa,ya), (xb,yb), (xc,yc), (xd,yd)]
+		points are returned in sorted order(first by x then y if x's tie)
 	'''
 	dist = [distance(a,b), distance(b,c), distance(a,c)]
 	maxIndex = dist.index(max(dist))
@@ -171,6 +175,7 @@ def extrapolateParallelogram(a, b, c):
 	p3 = addTuples(tuple(x-y for x,y in zip(point2, point3)), point1)
 	p4 = addTuples(tuple(y-x for x,y in zip(point2, point3)), point1)
 
+	#if they're equal, that's the new point.
 	if p1 == p4:
 		point4 = p1
 	if p1 == p3:
@@ -183,6 +188,31 @@ def extrapolateParallelogram(a, b, c):
 	parallelogram = (point1, point2, point3, point4)
 
 	return sorted(parallelogram)
+
+
+def warpImage(background, image, parallelogram):
+	'''
+	@params:
+		background is unchanged image
+		image is image to be warped
+		parallelogram is the coordinates to warp the image to, starting at upper
+			left and going clockwise
+	returns a new image that is the composition of background and image
+	 	after image has been warped
+	'''
+	mapped = np.array([[parallelogram[0][0], parallelogram[1][0], parallelogram[2][0]],
+	[parallelogram[0][1], parallelogram[1][1], parallelogram[2][1]], [1,1,1]])
+	width, height = image.size
+	original = np.array([[0, width, width],[0, 0, height]])
+	#solve for affine matrix
+	solution = np.dot(original, inv(mapped))
+	affine = (solution[0][0], solution[0][1], solution[0][2], solution[1][0], solution[1][1], solution[1][2])
+	print(affine)
+	transformed = image.transform(background.size, Image.AFFINE, affine)
+	white = Image.new("RGBA", (width, height), "white")
+	transformedMask = white.transform(background.size, Image.AFFINE, affine)
+	background.paste(transformed, (0,0), transformedMask)
+	return background
 
 	def scanImage(image):
 		'''
@@ -233,4 +263,8 @@ def extrapolateParallelogram(a, b, c):
 		'''
 		n2_max = num1*(1+leniency)
 		n2_min = num1*(1-leniency)
+<<<<<<< HEAD
 		return num1 == num2 or n2 < n2_max and n2 > n2_min
+=======
+		return n2 < n2_max and n2 > n2_min
+>>>>>>> 6e06e1e3960a2a4b765f21bbdf2a9e47cda75249
