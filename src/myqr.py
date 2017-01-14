@@ -130,5 +130,5 @@ def isInbounds(image, point):
 		flase if the point is outside the image
 	'''
 	size = image.size
-	#return all([dim > loc for dim,loc in zip(size,point)]) jacob wrote this hideous line of code and said fight me and its bad
-	return all([size[i] > point[i] for i in range(2)]) or min(point) =< 0
+# 	#return all([dim > loc for dim,loc in zip(size,point)]) jacob wrote this hideous line of code and said fight me and its bad
+# 	return all([size[i] > point[i] for i in range(2)]) or min(point) =< 0
