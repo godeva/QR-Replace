@@ -206,8 +206,8 @@ def warpImage(background, image, parallelogram):
 	original = np.array([[0, width, width],[0, 0, height]])
 	#solve for affine matrix
 	solution = np.dot(original, inv(mapped))
+	#unroll matrix into a sequence
 	affine = (solution[0][0], solution[0][1], solution[0][2], solution[1][0], solution[1][1], solution[1][2])
-	print(affine)
 	transformed = image.transform(background.size, Image.AFFINE, affine)
 	white = Image.new("RGBA", (width, height), "white")
 	transformedMask = white.transform(background.size, Image.AFFINE, affine)
@@ -238,9 +238,12 @@ def warpImage(background, image, parallelogram):
 		current_line = -1 #we start at -1 because i do +1 at the beginning
 		while current_line < image.size[1]:
 			current_line = current_line + 1
-			continue if len(lineclusters[current_line]) < 0 #so that i can just do this lazy line of code
-			for current_col in lineclusters[current_line] #this for loop handles when there's two clusters in one row (bottom of QR code)
-				scanline = current_line #we sometimes need to scanline down twice
+			continue if len(lineclusters[current_line]) < 0
+			#so that i can just do this lazy line of code
+			for current_col in lineclusters[current_line]
+			#this for loop handles when there's two clusters in one row (bottom of QR code)
+				scanline = current_line
+				#we sometimes need to scanline down twice
 				while len(lineclusters[scanline] > 0) and lineclusters[scanline] kindaEquals(current_line): #make sure that the clusters match up
 					scanline = scanline + 1
 				cluster_center = (current_col, int((scanline - current_line)/2)) #current_col is the position in the row

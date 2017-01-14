@@ -23,6 +23,9 @@ print(myqr.diffColors(a,b))#should yield 3
 print(myqr.diffPoints(im, (10, 10), (100, 10)))
 print(myqr.diffPoints(im2, (10, 10), (100, 10)))
 
+#test kindaEquals
+print(kindaEquals(5,5))
+
 #test  distance
 a1 = (3,0)
 b1 = (0,0)
