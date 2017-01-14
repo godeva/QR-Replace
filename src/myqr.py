@@ -179,7 +179,7 @@ def clockwiseRotation(from_v, to_v):
 		Used to determine which point is the "upper" clockwise leg of a triangle
 	'''
 	a = angleOf(from_v) - angleOf(to_v)
-	if a < 0`:
+	if a < 0:
 		a += 2 * math.pi
 	return a
 
@@ -324,10 +324,11 @@ def scanImage(image):
 	current_line = -1 #we start at -1 because i do +1 at the beginning
 	while current_line < image.size[1]:
 		current_line = current_line + 1
-		continue if len(lineclusters[current_line]) < 0 #so that i can just do this lazy line of code
-		for current_col in lineclusters[current_line] #this for loop handles when there's two clusters in one row (bottom of QR code)
+		if len(lineclusters[current_line]) < 0:
+			continue #so that i can just do this lazy line of code
+		for current_col in lineclusters[current_line]: #this for loop handles when there's two clusters in one row (bottom of QR code)
 			scanline = current_line #we sometimes need to scanline down twice
-			while len(lineclusters[scanline] > 0) and lineclusters[scanline] kindaEquals(current_line): #make sure that the clusters match up
+			while len(lineclusters[scanline] > 0) and kindaEquals(lineclusters[scanline], current_line): #make sure that the clusters match up
 				scanline = scanline + 1
 			cluster_center = (current_col, int((scanline - current_line)/2)) #current_col is the position in the row
 			cluster_points.append(cluster_center)							#scanline is end of the cluster, current_line is beginning so we can take their mean to get the middle
