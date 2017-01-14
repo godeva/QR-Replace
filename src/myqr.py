@@ -5,9 +5,12 @@ import qrcode
 '''
 NOTE:
 color-tuples are 3 element tuples structred as (R,G,B), 0-255 each
+
 point-tuples are 2 element tuples structed as (x,y)
 (note that this is consistent with pillows use of points)
 vectors are equivalent to point-tuples, but with a different context
+
+quadrilateral-tuples are 4 element tuples structured as (point-tuple,point-tuple,point-tuple,point-tuple)
 '''
 
 def addTuples(t1, t2):
@@ -100,19 +103,18 @@ def findQR(image):
 	'''
 	@params:
 		image is the image that we'll be messing with
-	Scan a vertical line over the image and try to find the 1113111 patterns of white/black
-	white is anything that's pretty white (find a way to determine that, probably with more machine learning)
-	black is anything that's not white (so if it's a strong blue,red,green, etc. that counts as black)
+	Returns n quadrilateral-tuples where n is the number of QR codes in the image.
 	'''
-	pass #@todo(someone) implement this
+	clusters = getPixelClusters(image)
+	pass #@todo(someone) finish this
 
 
 def insertQR(image, bounds, data):
 	'''
 	@params:
 		image is the image that we'll be messing with
-		bounds is where we're going to put the QR code
-		data is what will be encoded in the QR code (we'll be generating the QR code to insert inside here)
+		bounds is a quadrilateral-tuple specifying where to place the image
+		data is what will be encoded in the QR code
 	inserts a QR code into the image at the specified bounds
 	the new qr code should fit the bounds and seem natural (like it was the original imge)
 	'''
