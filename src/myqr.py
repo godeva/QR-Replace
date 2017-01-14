@@ -2,6 +2,26 @@
 import pillow
 import qrcode
 
+def diffColors(a, b):
+	'''
+	@params:
+		a is a color-tuple
+		b is a color-tuple
+	'''
+	diff = 0
+	for x,y in zip(a,b):
+		diff += abs(x - y)
+
+	return diff
+
+	"""
+	Yield an integer value representing total difference among color values.
+	Difference is computed for each R, G, B of color
+	Ranges from 0 (same color) to 765 (max difference)
+	"""
+
+
+
 def findQR(image):
 	'''
 	@params:
@@ -25,4 +45,4 @@ def insertQR(image, bounds, data):
 	'''
 	inserts a QR code into the image at the specified bounds
 	the new qr code should fit the bounds and seem natural (like it was the original imge)
-	
+	'''
