@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from PIL import Image
 import qrcode
-
+import itertools
 '''
 NOTE:
 color-tuples are 3 element tuples structred as (R,G,B), 0-255 each
@@ -45,14 +45,13 @@ def diffPoints(image, p1, p2):
 		p1 is a point-tuple
 		p2 is a point-tuple
 
-
 	Delegate call to diffColors on two points in an image
 	'''
 	a = image.getpixel(p1)
 	b = image.getpixel(p2)
 	return diffColors(a,b)
 
-def getPixelClusters(image, start, direction): #do we want to add an end parameter that defaults to end of line?
+def getPixelClusters(image, start, direction):
 	'''
 	@params:
 		image is the PIL image to sample from
@@ -124,13 +123,15 @@ def isInBounds(image, point):
 	'''
 	@params:
 		image is the image that we'll be messing with
-		point is a tuple-point that might
+		point is a tuple-point that we are testing
 	returns a boolean
-		true if the point is inside the image
-		flase if the point is outside the image
+		True if the point is inside the image
+		False if the point is outside the image
 	'''
 	size = image.size
-	return all([dim > loc for dim,loc in zip(size,point)]) #jacob wrote this hideous line of code and said fight me and its bad
+	p = point
+	return p.x >= 0 and p.y >= 0 and p.x < size.width and p.y < size.height
+	#return all([dim > loc for dim,loc in zip(size,point)]) #jacob wrote this hideous line of code and said fight me and its bad
 	#return all([size[i] > point[i] for i in range(2)]) or min(point) =< 0
 
 def distance(a, b):
@@ -140,7 +141,7 @@ def distance(a, b):
 		b is another point-tuple
 	returns a double representing distance between the two points
 	'''
-	return sum(abs(x-y)**(2.0) for x,y in zip(a,b))**(0.5)
+	return sum((x-y)**(2.0) for x,y in zip(a,b))**(0.5)
 
 
 def extrapolateParallelogram(a, b, c):
@@ -183,45 +184,3 @@ def extrapolateParallelogram(a, b, c):
 	parallelogram = (point1, point2, point3, point4)
 
 	return sorted(parallelogram)
-
-	def scanImage(image):
-		'''
-		@params
-			image is the image that we'll be messing with
-		returns a list of tuple-points which are the centers of any QR code corner identifiers
-		'''
-		lineclusters = []
-		for i in range(image.size[1]): #goes through each row of pixels in the image
-			lineclusters.append(getPixelClusters(image,(0,i),(1,0))) #grabs the clusters from one line
-
-		iclusters = [] #interesting clusters
-		for line in lineclusters:
-			matches = []
-			for i in range(len(lineclusters)-4): #scan the clusters five at a time to find the QR pattern
-				scanthis = line[i:i+5]			 #we're looking for 1-1-3-1-1
-				baselen = len(scanthis[0])
-				if kindaEquals(baselen, scanthis[1][1]) and kindaEquals(baselen, scanthis[3][1]) and kindaEquals(baselen, scanthis[4][1]) and kindaEquals(baselen*3, scanthis[2][1]): #i'm so sorry for this line of code. basically it just checks for the 1 1 3 1 1 pattern in qr code corners
-					matches.append(scanthis[3][1]/2 + scanthis[3][1][0]) #adds the middle of the middle of the scan to the matches
-			iclusters.append(matches)
-
-		'''OK
-		SO NOW WE HAVE THE MIDPOINT OF EVERY INTERESTING CLUSTER
-		NEED TO FIND THE MIDPOINT OF EVERY CLUSTER OF INTERESTING CLSUTERS
-		AND THEN RETURN THOSE POINTS
-		@todo(someone, probably aaron) code this
-		'''
-
-
-	def kindaEquals(num1, num2, leniency=.2):
-		'''
-		@params
-			num1 is a number
-			num2 is also a number
-			leniency is how lenient you're willing to be
-		returns a boolean
-			true if num1 is pretty close to num2
-			false is num1 is pretty far from num2
-		'''
-		n2_max = num1*(1+leniency)
-		n2_min = num1*(1-leniency)
-		return n2 < n2_max and n2 > n2_min
