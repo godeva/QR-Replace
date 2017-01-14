@@ -4,6 +4,7 @@ import qrcode
 import numpy as np
 from numpy.linalg import inv
 import itertools
+from mathutil import *
 
 '''
 NOTE:
@@ -12,32 +13,11 @@ color-tuples are 3 element tuples structred as (R,G,B), 0-255 each
 point-tuples are 2 element tuples structed as (x,y)
 (note that this is consistent with pillows use of points)
 vectors are equivalent to point-tuples, but with a different context
+cluster-tuple is a (point-tuple, int) where the int is cluster size
 
 quadrilateral-tuples are 4 element tuples structured as (point-tuple,point-tuple,point-tuple,point-tuple)
 '''
 
-def addTuples(t1, t2):
-	'''
-	@params:
-		t1 is a tuple
-		t2 is a tuple
-	Adds the contents of each tuple, element by element.
-	EX: addTuples((1,2),(4,6)) -> (5,8)
-	@jacob
-	'''
-	return piecewiseMap(t1, t2, lambda x,y: x+y)
-
-def piecewiseMap(t1, t2, fn):
-	'''
-	@params:
-		t1 is a tuple
-		t2 is a tuple
-		fn is a function taking two parameters, and returning a single value
-	Maps corresponding params of t1 and t2 by index.
-	Calls supplied function as fn(t1[i], t2[i]) for each i in len(tuples)
-	Returns a tuple of min((len(t1), len(t2)))
-	'''
-	return tuple(fn(x,y) for x,y in zip(t1,t2))
 
 def diffColors(a, b):
 	'''
@@ -73,11 +53,10 @@ def getPixelClusters(image, start, direction):
 		direction is a vector defining direction to travel
 
 	Scan over an image from a starting point until end of image is reached.
-	Scan results are returned as a list of tuples containing the start point of
-	the cluster, and the length of that cluster.
+	Scan results are returned as a list of cluster-tuples
 	EX:
 	[((5,0), 15), ((5,15), 7), ...]
-	   ^--point-tuple      ^--length of cluster
+	   ^--cluster-tuples
 
 	direction as a vector allows this function to be used for vertical, horizontal,
 	diagonal, or any angle of traversal, at varying levels of precision.
@@ -133,57 +112,7 @@ def insertQR(image, bounds, data):
 	'''
 	pass #@todo(someone) implement this
 
-def isInBounds(image, point):
-	'''
-	@params:
-		image is the image that we'll be messing with
-		point is a tuple-point that we are testing
-	returns a boolean
-		True if the point is inside the image
-		False if the point is outside the image
-	'''
-	width, height = image.size
-	p = point
-	return p[0] >= 0 and p[1] >= 0 and p[0] < width and p[1] < height
-	#return all([dim > loc for dim,loc in zip(size,point)]) #jacob wrote this hideous line of code and said fight me and its bad
-	#return all([size[i] > point[i] for i in range(2)]) or min(point) =< 0
-
-def distance(a, b):
-	'''
-	@params:
-		a is a point-tuple
-		b is another point-tuple
-	returns a double representing distance between the two points
-	'''
-	return math.hypot(a.x - b.x, a.y - b.y)
-
-def angleOf(vector):
-	'''
-	@params:
-		vector is a vector-tuple
-	returns a double representing the vectors clockwise rotation from the x axis
-		values range from [0,2pi)
-	'''
-	at = atan(vector[1], vector[0])
-	if at < 0:
-		at += 2*math.pi
-	return at
-
-def clockwiseRotation(from_v, to_v):
-	'''
-	@params:
-		from_v is a vector-tuple
-		to_v is a vector-tuple
-	returns a double representing the total rotation from vector from_v
-		to the vector to_v. Value returned is in range [0,2pi).
-		Used to determine which point is the "upper" clockwise leg of a triangle
-	'''
-	a = angleOf(from_v) - angleOf(to_v)
-	if a < 0:
-		a += 2 * math.pi
-	return a
-
-def extrapolateParallelogramJ(a, b, c):
+def extrapolateParallelogram(a, b, c):
 	'''
 	@params:
 		a is one of the detected clusters in the image
@@ -231,50 +160,10 @@ def extrapolateParallelogramJ(a, b, c):
 
 	op = orderByRotation(a,b,c)
 	np = genThirdPoint(op)
-	return (op[0], op[1], np, op[2])
-
-def extrapolateParallelogram(a, b, c):
-	'''
-	@params:
-		a is one point-tuple in the parallelogram
-		b is another point-tuple
-		c is the third point-tuple
-	returns a list of four points representing vertices of parallelogram
-		formed by the points, that most closely resembles a square
-		i.e. [(xa,ya), (xb,yb), (xc,yc), (xd,yd)]
-		points are returned in sorted order(first by x then y if x's tie)
-	'''
-	dist = [distance(a,b), distance(b,c), distance(a,c)]
-	maxIndex = dist.index(max(dist))
-
-	#determine which side is longest, so we can find which direction to go
-	if maxIndex == 0:
-		point1, point2, point3 = a,b,c
-	if maxIndex == 1:
-		point1, point2, point3 = b,c,a
-	if maxIndex == 2:
-		point1, point2, point3 = a,c,b
-
-	#find all possile new points from vector addition, and see which two are equal
-	p1 = addTuples(tuple(x-y for x,y in zip(point1, point3)), point2)
-	p2 = addTuples(tuple(y-x for x,y in zip(point1, point3)), point2)
-	p3 = addTuples(tuple(x-y for x,y in zip(point2, point3)), point1)
-	p4 = addTuples(tuple(y-x for x,y in zip(point2, point3)), point1)
-
-	#if they're equal, that's the new point.
-	if p1 == p4:
-		point4 = p1
-	if p1 == p3:
-		point4 = p1
-	if p2 == p4:
-		point4 = p2
-	if p2 == p3:
-		point4 = p2
-
-	parallelogram = (point1, point2, point3, point4)
-
-	return sorted(parallelogram)
-
+	parallelogram = (op[0], op[1], np, op[2])
+	offset = tuple(distance(x, (0,0)) for x in parallelogram)
+	offset = offset.index(min(offset))
+	return parallelogram[offset:] + parallelogram[:offset]
 
 def warpImage(background, image, parallelogram):
 	'''
@@ -306,9 +195,8 @@ def scanImage(image):
 		image is the image that we'll be messing with
 	returns a list of tuple-points which are the centers of any QR code corner identifiers
 	'''
-	lineclusters = []
-	for i in range(image.size[1]): #goes through each row of pixels in the image
-		lineclusters.append(getPixelClusters(image,(0,i),(1,0))) #grabs the clusters from one line
+	#lineclusters will be a list of lists (one per horizontal line) of cluster-tuples
+	lineclusters = [getPixelClusters(image, (0,i), (1,0)) for i in range(image.size[1])]
 
 	iclusters = [] #interesting clusters
 	for line in lineclusters:
@@ -335,19 +223,3 @@ def scanImage(image):
 		current_line = scanline #after scanning the clusters we set current line to scanline
 									#if we get lots of very nearby points change previous line to blabla = scanline + 1
 	return cluster_points
-
-
-
-def kindaEquals(num1, num2, leniency=.2):
-	'''
-	@params
-		num1 is a number
-		num2 is also a number
-		leniency is how lenient you're willing to be
-	returns a boolean
-		true if num1 is pretty close to num2
-		false is num1 is pretty far from num2
-	'''
-	n2_max = num1*(1+leniency)
-	n2_min = num1*(1-leniency)
-	return num1 == num2 or n2 < n2_max and n2 > n2_min
