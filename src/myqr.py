@@ -20,7 +20,6 @@ def diffColors(a, b):
 
 
 
-
 def findQR(image):
 	'''
 	@params:
