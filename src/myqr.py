@@ -263,8 +263,4 @@ def warpImage(background, image, parallelogram):
 		'''
 		n2_max = num1*(1+leniency)
 		n2_min = num1*(1-leniency)
-<<<<<<< HEAD
 		return num1 == num2 or n2 < n2_max and n2 > n2_min
-=======
-		return n2 < n2_max and n2 > n2_min
->>>>>>> 6e06e1e3960a2a4b765f21bbdf2a9e47cda75249
