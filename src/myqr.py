@@ -41,8 +41,8 @@ def insertQR(image, bounds, data):
 		bounds is where we're going to put the QR code
 		data is what will be encoded in the QR code (we'll be generating the QR code to insert inside here)
 	'''
-	pass #@todo(aaron) implement this
 	'''
 	inserts a QR code into the image at the specified bounds
 	the new qr code should fit the bounds and seem natural (like it was the original imge)
 	'''
+	pass #@todo(someone) implement this
