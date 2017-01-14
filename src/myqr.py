@@ -52,7 +52,7 @@ def diffPoints(image, p1, p2):
 	b = image.getpixel(p2)
 	return diffColors(a,b)
 
-def getPixelClusters(image, start, direction):
+def getPixelClusters(image, start, direction): #do we want to add an end parameter that defaults to end of line?
 	'''
 	@params:
 		image is the PIL image to sample from
@@ -183,7 +183,36 @@ def extrapolateParallelogram(a, b, c):
 	parallelogram = (point1, point2, point3, point4)
 
 	return sorted(parallelogram)
-	def kinaEquals(num1, num2, leniency=.2):
+
+	def scanImage(image):
+		'''
+		@params
+			image is the image that we'll be messing with
+		returns a list of tuple-points which are the centers of any QR code corner identifiers
+		'''
+		lineclusters = []
+		for i in range(image.size[1]): #goes through each row of pixels in the image
+			lineclusters.append(getPixelClusters(image,(0,i),(1,0))) #grabs the clusters from one line
+
+		iclusters = [] #interesting clusters
+		for line in lineclusters:
+			matches = []
+			for i in range(len(lineclusters)-4): #scan the clusters five at a time to find the QR pattern
+				scanthis = line[i:i+5]			 #we're looking for 1-1-3-1-1
+				baselen = len(scanthis[0])
+				if kindaEquals(baselen, scanthis[1][1]) and kindaEquals(baselen, scanthis[3][1]) and kindaEquals(baselen, scanthis[4][1]) and kindaEquals(baselen*3, scanthis[2][1]): #i'm so sorry for this line of code. basically it just checks for the 1 1 3 1 1 pattern in qr code corners
+					matches.append(scanthis[3][1]/2 + scanthis[3][1][0]) #adds the middle of the middle of the scan to the matches
+			iclusters.append(matches)
+
+		'''OK
+		SO NOW WE HAVE THE MIDPOINT OF EVERY INTERESTING CLUSTER
+		NEED TO FIND THE MIDPOINT OF EVERY CLUSTER OF INTERESTING CLSUTERS
+		AND THEN RETURN THOSE POINTS
+		@todo(someone, probably aaron) code this
+		'''
+
+
+	def kindaEquals(num1, num2, leniency=.2):
 		'''
 		@params
 			num1 is a number
