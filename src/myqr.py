@@ -192,7 +192,6 @@ def getImageQRClusters(image, scan_vector):
 	@params:
 		image is the image to search for qr-clusters on
 		scan_vector is a vector direction to traverse the image along.
-			(must be >=0 on each axis)
 	returns a list of points representing the center of group-tuple strips satisfying
 		the QR code ratio.
 	'''
