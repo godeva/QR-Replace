@@ -36,16 +36,16 @@ def diffPoints(image, p1, p2):
 	'''
 	@params:
 		image is the PIL image to sample from
-		p1 is a point-tuple
-		p2 is a point-tuple
+		p1 is a point
+		p2 is a point
 
 	Delegate call to diffColors on two points in an image
 	'''
-	a = image.getpixel(p1)
-	b = image.getpixel(p2)
+	a = image.getpixel(p1.asTuple())
+	b = image.getpixel(p2.asTuple())
 	return diffColors(a,b)
 
-def getPixelClusters(image, start, direction):
+def getColorGroups(image, start, direction):
 	'''
 	@params:
 		image is the PIL image to sample from
@@ -53,9 +53,9 @@ def getPixelClusters(image, start, direction):
 		direction is a vector defining direction to travel
 
 	Scan over an image from a starting point until end of image is reached.
-	Scan results are returned as a list of cluster-tuples
+	Scan results are returned as a list of LineSegment s
 	EX:
-	[((5,0), 15), ((5,15), 7), ...]
+	[LineSegment, LineSegment, ...]
 	   ^--cluster-tuples
 
 	direction as a vector allows this function to be used for vertical, horizontal,
@@ -205,10 +205,10 @@ def getImageQRClusters(image, scan_vector):
 	starts = []
 
 	#Create generators for each edge. Will use either depending on
-	top_edge = ((x,0) for x in range(width))
-	left_edge = ((0,y) for y in range(height))
-	bot_edge = ((x,height-1) for x in range(width))
-	right_edge = ((width-1,y) for y in range(height))
+	top_edge   = (Point(x,0) for x in range(width))
+	left_edge  = (Point(0,y) for y in range(height))
+	bot_edge   = (Point(x, height-1) for x in range(width))
+	right_edge = (Point(width-1,  y) for y in range(height))
 
 	#If scan vector leftwards, need right edge. Etc.
 	if scan_vector[0] < 0:
@@ -242,6 +242,7 @@ def getImageQRClusters(image, scan_vector):
 			if all(kindaEquals(base_len, length) for length in scan_lengths):
 				center_set = scan_set[2]
 				#compute midpoint of center_set
+				center =
 				x_avg = center_set[0][0] + center_set[1][0]
 				y_avg = center_set[0][1] + center_set[1][1]
 				center_mid = (x_avg, y_avg)
