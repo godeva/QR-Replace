@@ -201,23 +201,27 @@ def getImageQRClusters(image, scan_vector):
 	height = image.size[1]
 
 	#Determine what generator to use to generate scanline starts
-	start_gen = None
+	starts = []
 
-	top_gen = ((x,0) for x in range(width))
-	left_gen = ((0,y) for y in range(height))
+	#Create generators for each edge. Will use either depending on
+	top_edge = ((x,0) for x in range(width))
+	left_edge = ((0,y) for y in range(height))
+	bot_edge = ((x,height-1) for x in range(width))
+	right_edge = ((width-1,y) for y in range(height)
 
-	#If scan vector purely horizontal, only need left_gen
-	if scan_vector[1] == 0:
-		start_gen = left_gen
-	#If scan vector purely vertical, only need top
-	elif scan_vector[0] == 0:
-		start_gen = top_gen
-	#Else need both
-	else:
-		start_gen = itertools.chain(left_gen, top_gen)
+	#If scan vector leftwards, need right edge. Etc.
+	if scan_vector[0] < 0:
+		starts = itertools.chain(starts, left_edge)
+	elif scan_vector[0] > 0:
+		starts = itertools.chain(starts, right_edge)
+	#Do same for verticals
+	if scan_vector[1] < 0:
+		starts = itertools.chain(starts, top_edge)
+	elif scan_vector[1] > 0:
+		starts = itertools.chain(starts, bot_edge)
 
 	#For each start point select candidates
-	for start in start_gen:
+	for start in starts:
 		#Gen groups from this start
 		groups = getColorGroups(image, start, scan_vector)
 
