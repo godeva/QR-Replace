@@ -18,6 +18,9 @@ class Point:
 		'''
 		return self.x == point.x and self.y == point.y
 
+	def __str__(self):
+		return "({},{})".format(self.x, self.x)
+
 	def __hash__(self):
 		return hash((self.x, self.y))
 
