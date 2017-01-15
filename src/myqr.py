@@ -246,9 +246,7 @@ def getImageQRClusters(image, scan_vector):
 			if all(kindaEquals(base_len, length) for length in scan_lengths):
 				center_set = scan_set[2]
 				#compute midpoint of center_set
-				center =
-				x_avg = center_set[0][0] + center_set[1][0]
-				y_avg = center_set[0][1] + center_set[1][1]
+
 				center_mid = (x_avg, y_avg)
 				candidates.append(center_mid)
 
