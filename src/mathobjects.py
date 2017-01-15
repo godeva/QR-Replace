@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import mathutil
+import math
 
 class Point:
 	'''
@@ -60,7 +61,7 @@ class Point:
 		'''
 		width, height = image.size
 		p = self
-		return p[0] >= 0 and p[1] >= 0 and p[0] < width and p[1] < height
+		return p.x >= 0 and p.y >= 0 and p.x < width and p.y < height
 
 
 class Line:
