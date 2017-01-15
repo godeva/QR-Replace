@@ -11,6 +11,7 @@ def addTuples(t1, t2):
 	'''
 	return piecewiseMap(t1, t2, lambda x,y: x+y)
 
+
 def piecewiseMap(t1, t2, fn):
 	'''
 	@params:
@@ -22,6 +23,7 @@ def piecewiseMap(t1, t2, fn):
 	Returns a tuple of min((len(t1), len(t2)))
 	'''
 	return tuple(fn(x,y) for x,y in zip(t1,t2))
+
 
 def isInBounds(image, point):
 	'''
@@ -38,6 +40,7 @@ def isInBounds(image, point):
 	#return all([dim > loc for dim,loc in zip(size,point)]) #jacob wrote this hideous line of code and said fight me and its bad
 	#return all([size[i] > point[i] for i in range(2)]) or min(point) =< 0
 
+
 def distance(a, b):
 	'''
 	@params:
@@ -46,6 +49,7 @@ def distance(a, b):
 	returns a double representing distance between the two points
 	'''
 	return math.hypot(a[0] - b[0], a[1] - b[1])
+
 
 def angleOf(vector):
 	'''
@@ -59,7 +63,8 @@ def angleOf(vector):
 		at += 2*math.pi
 	return at
 
-def clockwiseRotation(from_v, to_v):
+
+def (from_v, to_v):
 	'''
 	@params:
 		from_v is a vector-tuple
@@ -73,6 +78,7 @@ def clockwiseRotation(from_v, to_v):
 		a += 2 * math.pi
 	return a
 
+
 def kindaEquals(num1, num2, leniency=.2):
 	'''
 	@params
@@ -85,4 +91,13 @@ def kindaEquals(num1, num2, leniency=.2):
 	'''
 	n2_max = num1*(1+leniency)
 	n2_min = num1*(1-leniency)
-	return num1 == num2 or n2 < n2_max and n2 > n2_min
+	return num1 == num2 or num2 < n2_max and num2 > n2_min
+
+
+def slope(p1, p2):
+	'''
+	@params:
+		p1 and p2 are point tuples
+	returns the slope of a line drawn through p1 and p2
+	'''
+	return (p1[1]-p2[1])/(p1[0]-p2[0])
