@@ -65,7 +65,7 @@ def angleOf(vector):
 	return at
 
 
-def (from_v, to_v):
+def clockwiseRotation(from_v, to_v):
 	'''
 	@params:
 		from_v is a vector-tuple
@@ -160,9 +160,6 @@ def extrapolateParallelogram(a, b, c):
 	offset = tuple(distance(x, (0,0)) for x in parallelogram)
 	offset = offset.index(min(offset))
 	return parallelogram[offset:] + parallelogram[:offset]
-<<<<<<< HEAD
->>>>>>> e1c1b25891db2f0416fe09588bbc1e62ae3084be
-=======
 
 def expandParallelogram(parallelogram, amount):
 	'''
@@ -179,4 +176,3 @@ def expandParallelogram(parallelogram, amount):
 	LL = addTuples(parallelogram[3], (-amount,amount))
 
 	return (UL, UR, LR, LL)
->>>>>>> 8ed79f00fc8d540b1d395c6db28904862a024ad4
