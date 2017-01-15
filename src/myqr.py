@@ -5,6 +5,7 @@ import numpy as np
 from numpy.linalg import inv
 import itertools
 from mathutil import *
+from copy import deepcopy
 
 '''
 NOTE:
@@ -13,7 +14,7 @@ color-tuples are 3 element tuples structred as (R,G,B), 0-255 each
 point-tuples are 2 element tuples structed as (x,y)
 (note that this is consistent with pillows use of points)
 vectors are equivalent to point-tuples, but with a different context
-cluster-tuple is a (point-tuple, int) where the int is cluster size
+group-tuple is a (point-tuple, point-tuple) representing a segment of similarly colored pixels
 
 quadrilateral-tuples are 4 element tuples structured as (point-tuple,point-tuple,point-tuple,point-tuple)
 '''
@@ -45,7 +46,7 @@ def diffPoints(image, p1, p2):
 	b = image.getpixel(p2)
 	return diffColors(a,b)
 
-def getPixelClusters(image, start, direction):
+def getColorGroups(image, start, direction):
 	'''
 	@params:
 		image is the PIL image to sample from
@@ -56,7 +57,7 @@ def getPixelClusters(image, start, direction):
 	Scan results are returned as a list of cluster-tuples
 	EX:
 	[((5,0), 15), ((5,15), 7), ...]
-	   ^--cluster-tuples
+	   ^--group-tuple
 
 	direction as a vector allows this function to be used for vertical, horizontal,
 	diagonal, or any angle of traversal, at varying levels of precision.
@@ -67,7 +68,6 @@ def getPixelClusters(image, start, direction):
 
 	#Track current cluster
 	cluster_start = last_point
-	cluster_size = 1
 
 	threshold = 50
 	#Continue scanning until curr_point is outside of image
@@ -75,19 +75,17 @@ def getPixelClusters(image, start, direction):
 		delta = diffPoints(image, last_point, next_point)
 
 		#Check if delta below thresh; if so, Continue
-		if delta < threshold:
-			cluster_size += 1
-		else:
+		#Otherwise add current cluster
+		if delta >= threshold:
 			#Else, add to ret vals
-			ret_vals += [(cluster_start, cluster_size)]
+			ret_vals += [(cluster_start, last_point)]
 			cluster_start = next_point
-			cluster_size = 1
 
 		last_point = next_point
 		next_point = addTuples(last_point, direction)
 
 	#Add last value to clusters
-	ret_vals += [(cluster_start, cluster_size)]
+	ret_vals += [(cluster_start, last_point)]
 	return ret_vals
 
 
@@ -188,6 +186,46 @@ def warpImage(background, image, parallelogram):
 	transformedMask = white.transform(background.size, Image.AFFINE, affine)
 	background.paste(transformed, (0,0), transformedMask)
 	return background
+
+def getImageQRClusters(image, scan_vector):
+	'''
+	@params:
+		image is the image to search for qr-clusters on
+		scan_vector is a vector direction to traverse the image along.
+			(must be >=0 on each axis)
+	returns a list of points representing the center of group-tuple strips satisfying
+		the QR code ratio.
+	'''
+	candidates = []
+
+	#Determine what generator to use to generate scanline starts
+	start_gen = None
+	#todo(Jacob): add support for more angles. Currently only horizontal works
+	start_gen = ((0,y) for y in range(image.size[1]))
+
+	#For each start point select candidates
+	for start in start_gen:
+		#Gen groups from this start
+		groups = getColorGroups(image, start, scan_vector)
+
+		#Zip through sets of 5 groups to find 1:1:3:1:1
+		group_sets = (groups[i:] for i in range(5))
+		for scan_set in zip(*group_sets):
+			#Compute lengths of each seg
+			scan_lengths = [distance(*scan_part) for scan_part in scan_set]
+
+			#Get length of first segnment as a  baseline to compare rest
+			base_len = scan_lengths[0]
+
+			#Since ratio is 1:1:3:1:1, adjust 3rd elt to be 1 so easier to compare
+			scan_lengths[2] /= 3
+
+			#Now check if all roughly equal
+			if all(kindaEquals(base_len, length) for length in scan_lengths:
+				center_set = scan_set[2]
+				#compute midpoint of center_set
+				x_av
+				candidates.append
 
 def scanImage(image):
 	'''
