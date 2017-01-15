@@ -37,7 +37,7 @@ class Line:
 		returns true if point is on the line
 		otherwise gives false
 		'''
-		return point[1] == slope*point[0] + intercept
+		return point.y == slope*point.x + intercept
 
 	def equals(self, line):
 		'''
