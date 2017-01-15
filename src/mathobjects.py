@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 import mathutil
 
-
-
 class Point:
 	'''
 	its a point
@@ -84,3 +82,20 @@ class Line:
 		is it that hard to guess what this does?
 		'''
 		return self.slope == line.slope and self.intercept == line.intercept
+
+class Segment:
+	'''
+	Class representing a simple line segment composed of two points
+	'''
+	def __init__(self, p1, p2):
+		self.p1 = p1
+		self.p2 = p2
+
+	def equals(self, segment):
+		return p1.equals(segment.p1) and p2.equal(segment.p2)
+
+	def length(self):
+		return self.p1.distance(self.p2)
+
+	def midpoint(self):
+		return 0.5 * (self.p1 + self.p2)
