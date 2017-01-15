@@ -107,7 +107,15 @@ def insertQR(image, data):
 	inserts a QR code into the image at the specified bounds
 	the new qr code should fit the bounds and seem natural (like it was the original imge)
 	'''
-	qrCode = qrcode.make(data)
+	qr_gen = qrcode.QRCode(
+		version = None,
+		box_size = 4,
+		border = 0
+	);
+	qr_gen.add_data(data)
+	qr_gen.make(fit=True)
+
+	qrCode = qr_gen.make_image()
 	pgram = scanImage2(image)
 	#pgram = expandParallelogram(pgram, 15)
 	return warpImage(image, qrCode, pgram)
