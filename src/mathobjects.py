@@ -30,7 +30,7 @@ class Point:
 		return Point(self.x + other.x, self.y + other.y)
 
 	def __sub__(self, other):
-		return Point(self.x - other.x, self.y - other.y)
+		return Point(self.x - other.x, self.y - other.y)#Subtract another point
 
 	def __rmul__(self, other): #Multiply by scalar number
 		return Point(self.x * other, self.y * other)
