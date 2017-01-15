@@ -75,3 +75,5 @@ print(mathutil.constructParallelograms(data))
 #test expandParallelogram
 print(mathutil.expandParallelogram(parallelogram, 4))
 print(myqr.getMassQRClusters(im, 1))
+
+print(myqr.scanImage2(im))
