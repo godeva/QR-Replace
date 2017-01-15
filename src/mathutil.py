@@ -178,3 +178,20 @@ def expandParallelogram(parallelogram, amount):
 
 	return (UL, UR, LR, LL)
 
+
+def constructParallelograms(dataset):
+	'''
+	@params
+		dataset is a list of points to find clusters in
+	returns a list of the parallelograms found.
+	'''
+	af = AffinityPropagation().fit(dataset)
+	print(af.cluster_centers_, af.labels_, len(af.cluster_centers_))
+	clusters = []
+	count = 0
+	while (count < len(af.cluster_centers_)):
+		clusters += [af.cluster_centers_[count].tolist()]
+		count += 1
+
+	print(clusters)
+	return extrapolateParallelogram(clusters[0], clusters[1], clusters[2])
