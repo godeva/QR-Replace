@@ -197,11 +197,24 @@ def getImageQRClusters(image, scan_vector):
 		the QR code ratio.
 	'''
 	candidates = []
+	width = image.size[0]
+	height = image.size[1]
 
 	#Determine what generator to use to generate scanline starts
 	start_gen = None
-	#todo(Jacob): add support for more angles. Currently only horizontal works
-	start_gen = ((0,y) for y in range(image.size[1]))
+
+	top_gen = ((x,0) for x in range(width))
+	left_gen = ((0,y) for y in range(height))
+
+	#If scan vector purely horizontal, only need left_gen
+	if scan_vector[1] == 0:
+		start_gen = left_gen
+	#If scan vector purely vertical, only need top
+	elif scan_vector[0] == 0:
+		start_gen = top_gen
+	#Else need both
+	else:
+		start_gen = itertools.chain(left_gen, top_gen)
 
 	#For each start point select candidates
 	for start in start_gen:
@@ -224,8 +237,12 @@ def getImageQRClusters(image, scan_vector):
 			if all(kindaEquals(base_len, length) for length in scan_lengths:
 				center_set = scan_set[2]
 				#compute midpoint of center_set
-				x_av
-				candidates.append
+				x_avg = center_set[0][0] + center_set[1][0]
+				y_avg = center_set[0][1] + center_set[1][1]
+				center_mid = (x_avg, y_avg)
+				candidates.append(center_mid)
+
+	return candidates
 
 def scanImage(image):
 	'''
