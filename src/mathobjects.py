@@ -20,7 +20,7 @@ class Point:
 		return self.x == point.x and self.y == point.y
 
 	def __str__(self):
-		return "({},{})".format(self.x, self.x)
+		return "({},{})".format(self.x, self.y)
 
 	def __repr__(self):
 		return str(self) #todo(anyone): make this not bad
