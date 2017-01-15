@@ -260,8 +260,10 @@ def scanImage(image):
 		prevpoint = points[0]
 		for i in range(1,len(points)):
 			newcluster = LineCluster(prevpoint,points[i])
-			clusters.append(newline) if not all(newcluster.equals(cluster) for cluster in clusters) or len(clusters) == 0
-			for point in points[i:-1]:
+			if not all(newcluster.equals(cluster) for cluster in clusters) or len(clusters) == 0:
+				clusters.append(newline)
+				for point in points[i:-1]:
+					newcluster.add
 
 class LineCluster:
 	def __init__(self,p1,p2):
@@ -269,10 +271,21 @@ class LineCluster:
 	self.line = Line(p1,p2)
 
 	def add(point):
+		'''
+		@params:
+			point is a tuple point
+		adds the point to the linecluster if 
+		'''
 		members.append(point) if line.contains(point)
 
-    def size():
-    	return len(members)
+    def size(self):
+    	return len(self.members)
+
+    def shortestDistance(self):
+    	'''
+    	returns the shortest distance between any two points in the line
+    	'''
+    	return min([distance(p1,p2) for p1 in members for p2 in members if p1])
 
     def equals(cluster):
     	return self.line.equals(cluster.line)
