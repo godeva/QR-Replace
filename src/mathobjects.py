@@ -44,3 +44,16 @@ class Line:
 		is it that hard to guess what this does?
 		'''
 		return self.slope == line.slope and self.intercept == line.intercept
+
+
+
+class Segment:
+	'''
+	@todo(jacob) make docstring
+	'''
+	def __init__(self, p1, p2):
+		self.p1 = p1
+		self.p2 = p2
+
+	def equals(self, segment):
+		return p1.equals(segment.p1) and p2.equal(segment.p2)
