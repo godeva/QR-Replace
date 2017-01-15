@@ -160,4 +160,23 @@ def extrapolateParallelogram(a, b, c):
 	offset = tuple(distance(x, (0,0)) for x in parallelogram)
 	offset = offset.index(min(offset))
 	return parallelogram[offset:] + parallelogram[:offset]
+<<<<<<< HEAD
 >>>>>>> e1c1b25891db2f0416fe09588bbc1e62ae3084be
+=======
+
+def expandParallelogram(parallelogram, amount):
+	'''
+	@params:
+		parallelogram is the parllelogram to expand
+		amount is the amount it should be expanded by
+	returns a new parallelogram that is slightly larger
+		**Note that parallelograms must be named starting from upper left
+		and proceed clockwise
+	'''
+	UL = addTuples(parallelogram[0], (-amount,-amount))
+	UR = addTuples(parallelogram[1], (amount,-amount))
+	LR = addTuples(parallelogram[2], (amount,amount))
+	LL = addTuples(parallelogram[3], (-amount,amount))
+
+	return (UL, UR, LR, LL)
+>>>>>>> 8ed79f00fc8d540b1d395c6db28904862a024ad4

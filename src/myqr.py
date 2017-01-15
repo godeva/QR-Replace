@@ -189,7 +189,67 @@ def warpImage(background, image, parallelogram):
 	background.paste(transformed, (0,0), transformedMask)
 	return background
 
-def scanImage(image):
+def getImageQRClusters(image, scan_vector):
+	'''
+	@params:
+		image is the image to search for qr-clusters on
+		scan_vector is a vector direction to traverse the image along.
+	returns a list of points representing the center of group-tuple strips satisfying
+		the QR code ratio.
+	'''
+	candidates = []
+	width = image.size[0]
+	height = image.size[1]
+
+	#Determine what generator to use to generate scanline starts
+	starts = []
+
+	#Create generators for each edge. Will use either depending on
+	top_edge = ((x,0) for x in range(width))
+	left_edge = ((0,y) for y in range(height))
+	bot_edge = ((x,height-1) for x in range(width))
+	right_edge = ((width-1,y) for y in range(height))
+
+	#If scan vector leftwards, need right edge. Etc.
+	if scan_vector[0] < 0:
+		starts = itertools.chain(starts, left_edge)
+	elif scan_vector[0] > 0:
+		starts = itertools.chain(starts, right_edge)
+	#Do same for verticals
+	if scan_vector[1] < 0:
+		starts = itertools.chain(starts, top_edge)
+	elif scan_vector[1] > 0:
+		starts = itertools.chain(starts, bot_edge)
+
+	#For each start point select candidates
+	for start in starts:
+		#Gen groups from this start
+		groups = getColorGroups(image, start, scan_vector)
+
+		#Zip through sets of 5 groups to find 1:1:3:1:1
+		group_sets = (groups[i:] for i in range(5))
+		for scan_set in zip(*group_sets):
+			#Compute lengths of each seg
+			scan_lengths = [distance(*scan_part) for scan_part in scan_set]
+
+			#Get length of first segnment as a  baseline to compare rest
+			base_len = scan_lengths[0]
+
+			#Since ratio is 1:1:3:1:1, adjust 3rd elt to be 1 so easier to compare
+			scan_lengths[2] /= 3
+
+			#Now check if all roughly equal
+			if all(kindaEquals(base_len, length) for length in scan_lengths):
+				center_set = scan_set[2]
+				#compute midpoint of center_set
+				x_avg = center_set[0][0] + center_set[1][0]
+				y_avg = center_set[0][1] + center_set[1][1]
+				center_mid = (x_avg, y_avg)
+				candidates.append(center_mid)
+
+	return candidates
+
+
 	'''
 	@params
 		image is the image that we'll be messing with

@@ -44,7 +44,8 @@ print(myqr.distance(a1,b1))#should yield three
 #test getPixelClusters
 print("\nfinding consecutive similarly colored pixels")
 im3 = Image.open("../TestImages/TestClusters.png")
-print(myqr.getPixelClusters(im3, (0, 15), (1,0)))
+im3 = im3.convert("RGB")
+print(myqr.getImageQRClusters(im3, (1,0)))
 
 #test extrapolateParallelogram
 p1 = (5,5)
@@ -67,3 +68,6 @@ warped.show()
 data, labels = make_blobs(n_samples=20, centers=[[10,10],[50,10],[10,50]])
 print(data.shape)
 print(myqr.constructParallelograms(data))
+
+#test expandParallelogram
+print(mathutil.expandParallelogram(parallelogram, 4))
