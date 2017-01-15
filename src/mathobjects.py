@@ -38,6 +38,30 @@ class Point:
 	def distance(self, other):
 		return math.hypot(self.x - other.x, self.y - other.y)
 
+	def angleOf(self):
+		'''
+		returns a double representing this point's (as a vector),
+			['s] counter-clockwise rotation from the x axis
+			values range from [0,2pi)
+		'''
+		at = math.atan2(self.y, self.x)
+		if at < 0:
+			at += 2*math.pi
+		return at
+
+	def isInBounds(self, image):
+		'''
+		@params:
+			image is the image that we'll be checking with
+		returns a boolean
+			True if this point is inside the image
+			False if this point is outside the image
+		'''
+		width, height = image.size
+		p = self
+		return p[0] >= 0 and p[1] >= 0 and p[0] < width and p[1] < height
+
+
 class Line:
 	'''
 	its a line, defined by its slope and y intercept
