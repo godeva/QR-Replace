@@ -37,58 +37,54 @@ def diffPoints(image, p1, p2):
 	'''
 	@params:
 		image is the PIL image to sample from
-		p1 is a point-tuple
-		p2 is a point-tuple
+		p1 is a point
+		p2 is a point
 
 	Delegate call to diffColors on two points in an image
 	'''
-	a = image.getpixel(p1)
-	b = image.getpixel(p2)
+	a = image.getpixel(p1.asTuple())
+	b = image.getpixel(p2.asTuple())
 	return diffColors(a,b)
 
 def getColorGroups(image, start, direction):
 	'''
 	@params:
 		image is the PIL image to sample from
-		start is a point-tuple defining where to begin scanning clusters
-		direction is a vector defining direction to travel
+		start is a point defining where to begin scanning clusters
+		direction is a point (vector) defining direction to travel
 
 	Scan over an image from a starting point until end of image is reached.
-	Scan results are returned as a list of cluster-tuples
+	Scan results are returned as a list of Segments
 	EX:
-	[((5,0), 15), ((5,15), 7), ...]
-	   ^--cluster-tuples
+	[Segment, Segment]
 
 	direction as a vector allows this function to be used for vertical, horizontal,
 	diagonal, or any angle of traversal, at varying levels of precision.
 	'''
 	ret_vals = [] #Create list to add clusters to
 	last_point = start
-	next_point = addTuples(last_point, direction)
+	next_point = last_point + direction
 
 	#Track current cluster
 	cluster_start = last_point
-	cluster_size = 1
 
 	threshold = 50
 	#Continue scanning until curr_point is outside of image
-	while isInBounds(image, next_point):
+	while next_point.isInBounds(image):
 		delta = diffPoints(image, last_point, next_point)
 
-		#Check if delta below thresh; if so, Continue
-		if delta < threshold:
-			cluster_size += 1
-		else:
+		#Check if delta above thresh. If so, break off segment
+		if delta > threshold:
 			#Else, add to ret vals
-			ret_vals += [(cluster_start, cluster_size)]
+			ret_vals += [Segment(cluster_start, last_point)]
 			cluster_start = next_point
-			cluster_size = 1
 
+		#Cycle points
 		last_point = next_point
-		next_point = addTuples(last_point, direction)
+		next_point = last_point + direction
 
 	#Add last value to clusters
-	ret_vals += [(cluster_start, cluster_size)]
+	ret_vals += [Segment(cluster_start, last_point)]
 	return ret_vals
 
 
@@ -116,7 +112,7 @@ def insertQR(image, bounds, data):
 def extrapolateParallelogram(a, b, c):
 	'''
 	@params:
-		a is one of the detected clusters in the image
+		a is one of the detected clusters in the image (as a point)
 		b ditto
 		c ditto
 	returns a list of four points representing vertices of parallelogram
@@ -124,10 +120,15 @@ def extrapolateParallelogram(a, b, c):
 	'''
 
 	def deduceKnownCorner(a, b, c): #Get points as (corner, another, another)
-		segs = ((a,b), (b,c), (a,c))
-		sorted_distance = sorted(segs, key=lambda seg: distance(seg[0], seg[1]))
+		segs = (Segment(a,b), Segment(b,c), Segment(a,c))
+		#Determine longest segment by sorting by lengths
+		sorted_distance = sorted(segs, key=lambda seg: seg.length())
 		longest_seg = sorted_distance[2]
-		return sorted((a,b,c), key=lambda p: p in longest_seg)
+
+		#Find the points in longest seg, sort by being in it
+		#Ascending sort will put remaining at back
+		ls_points = (longest_seg.p1, longest_seg.p2)
+		return sorted((a,b,c), key=lambda p: p in ls_points)
 
 	def orderByRotation(a, b, c): #Orders points of triangle clockwise. First point is anchor. Tuple of tuple-point
 		cp = deduceKnownCorner(a,b,c)
@@ -136,8 +137,8 @@ def extrapolateParallelogram(a, b, c):
 		b = cp[2]
 
 		#Get vectors from corner to each leg
-		v_corner_a = piecewiseMap(corner, a, lambda x,y: y - x)
-		v_corner_b = piecewiseMap(corner, b, lambda x,y: y - x)
+		v_corner_a = a - corner
+		v_corner_b = b - corner
 
 		#Find which comes vector 'first', clockwise from x axis
 		#Determined by which has lower clockwise angle
@@ -154,17 +155,20 @@ def extrapolateParallelogram(a, b, c):
 		corner = ordered_points[0]
 		leg1 = ordered_points[1]
 		leg2 = ordered_points[2]
-		vec_corner_leg1 = piecewiseMap(corner, leg1, lambda x,y: y - x)
+		vec_corner_leg1 = leg1 - corner
 
 		#Add this vec to leg2 to get final point of pgram.
-		return addTuples(leg2, vec_corner_leg1)
+		return leg2 + vec_corner_leg1
 
 	op = orderByRotation(a,b,c)
 	np = genThirdPoint(op)
 	parallelogram = (op[0], op[1], np, op[2])
-	offset = tuple(distance(x, (0,0)) for x in parallelogram)
-	offset = offset.index(min(offset))
-	return parallelogram[offset:] + parallelogram[:offset]
+
+	#Reorder to have first point be top-leftmost
+	origin = Point(0,0)
+	offsets = [origin.distance(x) for x in parallelogram]
+	closest_index = offsets.index(min(offsets))
+	return parallelogram[closest_index:] + parallelogram[:closest_index]
 
 def warpImage(background, image, parallelogram):
 	'''
@@ -207,10 +211,10 @@ def getImageQRClusters(image, scan_vector):
 	starts = []
 
 	#Create generators for each edge. Will use either depending on
-	top_edge = ((x,0) for x in range(width))
-	left_edge = ((0,y) for y in range(height))
-	bot_edge = ((x,height-1) for x in range(width))
-	right_edge = ((width-1,y) for y in range(height))
+	top_edge   = (Point(x,0) for x in range(width))
+	left_edge  = (Point(0,y) for y in range(height))
+	bot_edge   = (Point(x, height-1) for x in range(width))
+	right_edge = (Point(width-1,  y) for y in range(height))
 
 	#If scan vector leftwards, need right edge. Etc.
 	if scan_vector[0] <= 0:
@@ -242,6 +246,7 @@ def getImageQRClusters(image, scan_vector):
 			if all(kindaEquals(base_len, length) for length in scan_lengths):
 				center_set = scan_set[2]
 				#compute midpoint of center_set
+				center =
 				x_avg = center_set[0][0] + center_set[1][0]
 				y_avg = center_set[0][1] + center_set[1][1]
 				center_mid = (x_avg, y_avg)
