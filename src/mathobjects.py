@@ -94,6 +94,9 @@ class Segment:
 		self.p1 = p1
 		self.p2 = p2
 
+	def __str__(self):
+		return "<{}-{}>".format(self.p1, self.p2)
+
 	def equals(self, segment):
 		return p1.equals(segment.p1) and p2.equal(segment.p2)
 
