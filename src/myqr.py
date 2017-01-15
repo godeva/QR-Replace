@@ -156,7 +156,7 @@ def getImageQRClusters(image, scan_vector):
 	top_edge = ((x,0) for x in range(width))
 	left_edge = ((0,y) for y in range(height))
 	bot_edge = ((x,height-1) for x in range(width))
-	right_edge = ((width-1,y) for y in range(height)
+	right_edge = ((width-1,y) for y in range(height))
 
 	#If scan vector leftwards, need right edge. Etc.
 	if scan_vector[0] < 0:
@@ -187,7 +187,7 @@ def getImageQRClusters(image, scan_vector):
 			scan_lengths[2] /= 3
 
 			#Now check if all roughly equal
-			if all(kindaEquals(base_len, length) for length in scan_lengths:
+			if all(kindaEquals(base_len, length) for length in scan_lengths):
 				center_set = scan_set[2]
 				#compute midpoint of center_set
 				x_avg = center_set[0][0] + center_set[1][0]
