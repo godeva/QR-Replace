@@ -49,45 +49,41 @@ def getColorGroups(image, start, direction):
 	'''
 	@params:
 		image is the PIL image to sample from
-		start is a point-tuple defining where to begin scanning clusters
-		direction is a vector defining direction to travel
+		start is a point defining where to begin scanning clusters
+		direction is a point (vector) defining direction to travel
 
 	Scan over an image from a starting point until end of image is reached.
-	Scan results are returned as a list of LineSegment s
+	Scan results are returned as a list of Segments
 	EX:
-	[LineSegment, LineSegment, ...]
-	   ^--cluster-tuples
+	[Segment, Segment]
 
 	direction as a vector allows this function to be used for vertical, horizontal,
 	diagonal, or any angle of traversal, at varying levels of precision.
 	'''
 	ret_vals = [] #Create list to add clusters to
 	last_point = start
-	next_point = addTuples(last_point, direction)
+	next_point = last_point + direction
 
 	#Track current cluster
 	cluster_start = last_point
-	cluster_size = 1
 
 	threshold = 50
 	#Continue scanning until curr_point is outside of image
-	while isInBounds(image, next_point):
+	while next_point.isInBounds(image):
 		delta = diffPoints(image, last_point, next_point)
 
-		#Check if delta below thresh; if so, Continue
-		if delta < threshold:
-			cluster_size += 1
-		else:
+		#Check if delta above thresh. If so, break off segment
+		if delta > threshold:
 			#Else, add to ret vals
-			ret_vals += [(cluster_start, cluster_size)]
+			ret_vals += [Segment(cluster_start, last_point)]
 			cluster_start = next_point
-			cluster_size = 1
 
+		#Cycle points
 		last_point = next_point
-		next_point = addTuples(last_point, direction)
+		next_point = last_point + direction
 
 	#Add last value to clusters
-	ret_vals += [(cluster_start, cluster_size)]
+	ret_vals += [Segment(cluster_start, last_point)]
 	return ret_vals
 
 
