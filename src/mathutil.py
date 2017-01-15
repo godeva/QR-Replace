@@ -12,6 +12,7 @@ def addTuples(t1, t2):
 	'''
 	return piecewiseMap(t1, t2, lambda x,y: x+y)
 
+
 def piecewiseMap(t1, t2, fn):
 	'''
 	@params:
@@ -23,6 +24,7 @@ def piecewiseMap(t1, t2, fn):
 	Returns a tuple of min((len(t1), len(t2)))
 	'''
 	return tuple(fn(x,y) for x,y in zip(t1,t2))
+
 
 def isInBounds(image, point):
 	'''
@@ -39,6 +41,7 @@ def isInBounds(image, point):
 	#return all([dim > loc for dim,loc in zip(size,point)]) #jacob wrote this hideous line of code and said fight me and its bad
 	#return all([size[i] > point[i] for i in range(2)]) or min(point) =< 0
 
+
 def distance(a, b):
 	'''
 	@params:
@@ -47,6 +50,7 @@ def distance(a, b):
 	returns a double representing distance between the two points
 	'''
 	return math.hypot(a[0] - b[0], a[1] - b[1])
+
 
 def angleOf(vector):
 	'''
@@ -60,7 +64,8 @@ def angleOf(vector):
 		at += 2*math.pi
 	return at
 
-def clockwiseRotation(from_v, to_v):
+
+def (from_v, to_v):
 	'''
 	@params:
 		from_v is a vector-tuple
@@ -74,6 +79,7 @@ def clockwiseRotation(from_v, to_v):
 		a += 2 * math.pi
 	return a
 
+
 def kindaEquals(num1, num2, leniency=.2):
 	'''
 	@params
@@ -86,7 +92,22 @@ def kindaEquals(num1, num2, leniency=.2):
 	'''
 	n2_max = num1*(1+leniency)
 	n2_min = num1*(1-leniency)
-	return num1 == num2 or (num2 < n2_max and num2 > n2_min)
+	return num1 == num2 or num2 < n2_max and num2 > n2_min
+	#know your order of operations in boolean algebra
+	#and is like multiplication or is like addition
+	#we do it like this so if they are equal it jsut returns true and doesnt evaluate the rest
+	#and then it evaluates the ands as if it had the perens
+
+
+
+def slope(p1, p2):
+	'''
+	@params:
+		p1 and p2 are point tuples
+	returns the slope of a line drawn through p1 and p2
+	'''
+	return (p1[1]-p2[1])/(p1[0]-p2[0])
+
 def extrapolateParallelogram(a, b, c):
 	'''
 	@params:
@@ -139,3 +160,23 @@ def extrapolateParallelogram(a, b, c):
 	offset = tuple(distance(x, (0,0)) for x in parallelogram)
 	offset = offset.index(min(offset))
 	return parallelogram[offset:] + parallelogram[:offset]
+<<<<<<< HEAD
+>>>>>>> e1c1b25891db2f0416fe09588bbc1e62ae3084be
+=======
+
+def expandParallelogram(parallelogram, amount):
+	'''
+	@params:
+		parallelogram is the parllelogram to expand
+		amount is the amount it should be expanded by
+	returns a new parallelogram that is slightly larger
+		**Note that parallelograms must be named starting from upper left
+		and proceed clockwise
+	'''
+	UL = addTuples(parallelogram[0], (-amount,-amount))
+	UR = addTuples(parallelogram[1], (amount,-amount))
+	LR = addTuples(parallelogram[2], (amount,amount))
+	LL = addTuples(parallelogram[3], (-amount,amount))
+
+	return (UL, UR, LR, LL)
+>>>>>>> 8ed79f00fc8d540b1d395c6db28904862a024ad4
