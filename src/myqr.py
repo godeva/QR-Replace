@@ -249,7 +249,26 @@ def getImageQRClusters(image, scan_vector):
 
 	return candidates
 
+def getMassQRClusters(image, num_vectors):
+	'''
+	@params:
+		image is the image to scan,
+		num_vectors is the number of different vectors to scan along
+	returns the combined result of running getImageQRClusters over the image from
+		many different angles, to counteract possible rotational artifacts.
+	'''
+	angle_delta = math.pi / num_vectors
+	vec_angles = [x*angle_delta for x in range(num_vectors)]
+	vectors = [(cos(theta), sin(theta)) for theta in vec_angles]
 
+	#Generate points for each vector
+	qr_points = []
+	for vec in vectors:
+		qr_points += getImageQRClusters(image, vec)
+
+	return qr_points
+
+def scanImage(image):
 	'''
 	@params
 		image is the image that we'll be messing with
@@ -278,7 +297,6 @@ def getImageQRClusters(image, scan_vector):
 			if kindaEquals(baselen, scanthis[1][1]) and kindaEquals(baselen, scanthis[3][1]) and kindaEquals(baselen, scanthis[4][1]) and kindaEquals(baselen*3, scanthis[2][1]): #i'm so sorry for this line of code. basically it just checks for the 1 1 3 1 1 pattern in qr code corners
 				matches.append(scanthis[3][1][0]/2 + scanthis[3][1][0]) #adds the middle of the middle of the scan to the matches
 		iclusters.append(matches)
-	#print(iclusters)
 	cluster_points = [] #this is a list of cluster points that we will be returning
 	current_line = -1 #we start at -1 because i do +1 at the beginning
 	while current_line < image.size[1]-1:
