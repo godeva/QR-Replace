@@ -102,7 +102,7 @@ class Segment:
 		return "<{}-{}>".format(self.p1, self.p2)
 
 	def __repr__(self):
-		return "<{}-{}>".format(self.p1, self.p2)
+		return str(self) #todo(anyone): make this not bad
 
 	def equals(self, segment):
 		return p1.equals(segment.p1) and p2.equal(segment.p2)

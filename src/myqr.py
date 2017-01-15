@@ -108,6 +108,7 @@ def insertQR(image, bounds, data):
 	inserts a QR code into the image at the specified bounds
 	the new qr code should fit the bounds and seem natural (like it was the original imge)
 	'''
+	qrCode = qrcode.make(data)
 	pass #@todo(someone) implement this
 
 def warpImage(background, image, parallelogram):
@@ -171,7 +172,7 @@ def getImageQRClusters(image, scan_vector):
 		#Gen groups from this start
 		groups = getColorGroups(image, start, scan_vector)
 		#Zip through sets of 5 groups to find 1:1:3:1:1
-		group_sets = (groups[i:] for i in range(5))
+		group_sets = [groups[i:] for i in range(5)]
 		for scan_set in zip(*group_sets):
 			#Compute lengths of each seg
 			scan_lengths = [distance(*scan_part) for scan_part in scan_set]
