@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from PIL import Image
+import math
 import qrcode
 import numpy as np
 from numpy.linalg import inv
@@ -45,7 +46,7 @@ def diffPoints(image, p1, p2):
 	b = image.getpixel(p2)
 	return diffColors(a,b)
 
-def getPixelClusters(image, start, direction):
+def getColorGroups(image, start, direction):
 	'''
 	@params:
 		image is the PIL image to sample from
@@ -177,8 +178,10 @@ def warpImage(background, image, parallelogram):
 	'''
 	mapped = np.array([[parallelogram[0][0], parallelogram[1][0], parallelogram[2][0]],
 	[parallelogram[0][1], parallelogram[1][1], parallelogram[2][1]], [1,1,1]])
+
 	width, height = image.size
 	original = np.array([[0, width, width],[0, 0, height]])
+
 	#solve for affine matrix
 	solution = np.dot(original, inv(mapped))
 	#unroll matrix into a sequence
@@ -200,7 +203,6 @@ def getImageQRClusters(image, scan_vector):
 	candidates = []
 	width = image.size[0]
 	height = image.size[1]
-
 	#Determine what generator to use to generate scanline starts
 	starts = []
 
@@ -211,27 +213,25 @@ def getImageQRClusters(image, scan_vector):
 	right_edge = ((width-1,y) for y in range(height))
 
 	#If scan vector leftwards, need right edge. Etc.
-	if scan_vector[0] < 0:
+	if scan_vector[0] <= 0:
 		starts = itertools.chain(starts, left_edge)
 	elif scan_vector[0] > 0:
 		starts = itertools.chain(starts, right_edge)
 	#Do same for verticals
-	if scan_vector[1] < 0:
+	if scan_vector[1] <= 0:
 		starts = itertools.chain(starts, top_edge)
 	elif scan_vector[1] > 0:
 		starts = itertools.chain(starts, bot_edge)
-
 	#For each start point select candidates
 	for start in starts:
 		#Gen groups from this start
 		groups = getColorGroups(image, start, scan_vector)
-
 		#Zip through sets of 5 groups to find 1:1:3:1:1
 		group_sets = (groups[i:] for i in range(5))
 		for scan_set in zip(*group_sets):
 			#Compute lengths of each seg
 			scan_lengths = [distance(*scan_part) for scan_part in scan_set]
-
+			print(scan_lengths)
 			#Get length of first segnment as a  baseline to compare rest
 			base_len = scan_lengths[0]
 
@@ -259,7 +259,7 @@ def getMassQRClusters(image, num_vectors):
 	'''
 	angle_delta = math.pi / num_vectors
 	vec_angles = [x*angle_delta for x in range(num_vectors)]
-	vectors = [(cos(theta), sin(theta)) for theta in vec_angles]
+	vectors = [(math.cos(theta), math.sin(theta)) for theta in vec_angles]
 
 	#Generate points for each vector
 	qr_points = []

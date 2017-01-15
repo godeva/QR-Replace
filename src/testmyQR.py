@@ -45,7 +45,7 @@ print(myqr.distance(a1,b1))#should yield three
 print("\nfinding consecutive similarly colored pixels")
 im3 = Image.open("../TestImages/TestClusters.png")
 im3 = im3.convert("RGB")
-print(myqr.getImageQRClusters(im3, (1,0)))
+print(myqr.getColorGroups(im3, (0,0), (1,0)))
 
 #test extrapolateParallelogram
 p1 = (5,5)
@@ -59,15 +59,18 @@ print(myqr.extrapolateParallelogram(p2,p4,p3))
 
 #test warpImage
 parallelogram = [(75,50),(150,60),(150,150), (50,150)]
-parallelogram2 = [(250,250),(400,120),(641,300), (440,440)]
-warped = myqr.warpImage(im2, im, parallelogram2)
+parallelogram2 = [(277,288),(389,111),(571,230), (458,403)]
+im4 = Image.open("../TestImages/cropped-qr.jpg")
+warped = myqr.warpImage(im2, im4, parallelogram2)
 print("\ntesting image warping...")
-im.show()
+i = Image.open("../TestImages/tiltedQRcode.jpg")
+i.show()
 warped.show()
 
 data, labels = make_blobs(n_samples=20, centers=[[10,10],[50,10],[10,50]])
 print(data.shape)
-print(myqr.constructParallelograms(data))
+print(mathutil.constructParallelograms(data))
 
 #test expandParallelogram
 print(mathutil.expandParallelogram(parallelogram, 4))
+print(myqr.getMassQRClusters(im, 1))
