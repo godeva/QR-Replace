@@ -345,8 +345,8 @@ def scanImage(image):
 
 class LineCluster:
 	def __init__(self,p1,p2):
-	self.members = [p1,p2]
-	self.line = Line(p1,p2)
+		self.members = [p1,p2]
+		self.line = Line(p1,p2)
 
 	def add(point):
 		'''
