@@ -108,6 +108,7 @@ def insertQR(image, bounds, data):
 	inserts a QR code into the image at the specified bounds
 	the new qr code should fit the bounds and seem natural (like it was the original imge)
 	'''
+	qrCode = qrcode.make(data)
 	pass #@todo(someone) implement this
 
 def warpImage(background, image, parallelogram):

@@ -23,7 +23,7 @@ class Point:
 		return "({},{})".format(self.x, self.y)
 
 	def __repr__(self):
-		return str(self) #todo(anyone): make this not bad
+		return "(%s,%s)" % (self.x, self.y)
 
 	def __hash__(self):
 		return hash((self.x, self.y))
