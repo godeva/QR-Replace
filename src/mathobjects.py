@@ -20,11 +20,27 @@ class Point:
 		'''
 		return self.x == point.x and self.y == point.y
 
+	def __hash__(self):
+		return hash((self.x, self.y))
 
+	def asTuple(self):
+		return (self.x, self.y)
+
+	def __add__(self, other): #Add with another point
+		return Point(self.x + other.x, self.y + other.y)
+
+	def __sub__(self, other):
+		return Point(self.x - other.x, self.y - other.y)
+
+	def __rmul__(self, other): #Multiply by scalar number
+		return Point(self.x * other, self.y * other)
+
+	def distance(self, other):
+		return math.hypot(self.x - other.x, self.y - other.y)
 
 class Line:
 	'''
-	its a line
+	its a line, defined by its slope and y intercept
 	'''
 	def __init__(self, p1, p2):
 		self.slope = mathutil.slope(p1, p2)
