@@ -99,17 +99,18 @@ def findQR(image):
 	pass #@todo(someone) finish this
 
 
-def insertQR(image, bounds, data):
+def insertQR(image, data):
 	'''
 	@params:
 		image is the image that we'll be messing with
-		bounds is a quadrilateral-tuple specifying where to place the image
 		data is what will be encoded in the QR code
 	inserts a QR code into the image at the specified bounds
 	the new qr code should fit the bounds and seem natural (like it was the original imge)
 	'''
 	qrCode = qrcode.make(data)
-	pass #@todo(someone) implement this
+	pgram = scanImage2(image)
+	#pgram = expandParallelogram(pgram, 15)
+	return warpImage(image, qrCode, pgram)
 
 def warpImage(background, image, parallelogram):
 	'''
@@ -176,7 +177,6 @@ def getImageQRClusters(image, scan_vector):
 		for scan_set in zip(*group_sets):
 			#Compute lengths of each seg
 			scan_lengths = [scan_seg.length() for scan_seg in scan_set]
-			print(scan_lengths)
 			#Get length of first segnment as a  baseline to compare rest
 			base_len = scan_lengths[0]
 
