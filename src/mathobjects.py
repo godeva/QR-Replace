@@ -20,7 +20,10 @@ class Point:
 		return self.x == point.x and self.y == point.y
 
 	def __str__(self):
-		return "({},{})".format(self.x, self.x)
+		return "(%s,%s)" % (self.x, self.y)
+
+	def __repr__(self):
+		return "(%s,%s)" % (self.x, self.y)
 
 	def __hash__(self):
 		return hash((self.x, self.y))
@@ -96,6 +99,9 @@ class Segment:
 		self.p2 = p2
 
 	def __str__(self):
+		return "<{}-{}>".format(self.p1, self.p2)
+
+	def __repr__(self):
 		return "<{}-{}>".format(self.p1, self.p2)
 
 	def equals(self, segment):
