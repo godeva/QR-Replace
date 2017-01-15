@@ -354,16 +354,18 @@ class LineCluster:
 			point is a tuple point
 		adds the point to the linecluster if
 		'''
-		members.append(point) if line.contains(point)
+		if line.contains(point):
+			members.append(point)
+		return
 
-    def size(self):
-    	return len(self.members)
+	def size(self):
+		return len(self.members)
 
-    def shortestDistance(self):
-    	'''
-    	returns the shortest distance between any two points in the line
-    	'''
-    	return min([distance(p1,p2) for p1 in members for p2 in members if p1])
+	def shortestDistance(self):
+		'''
+		returns the shortest distance between any two points in the line
+		'''
+		return min([distance(p1,p2) for p1 in members for p2 in members if p1])
 
-    def equals(cluster):
-    	return self.line.equals(cluster.line)
+	def equals(cluster):
+		return self.line.equals(cluster.line)
