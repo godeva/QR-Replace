@@ -158,12 +158,12 @@ def getImageQRClusters(image, scan_vector):
 	right_edge = (Point(width-1,  y) for y in range(height))
 
 	#If scan vector leftwards, need right edge. Etc.
-	if scan_vector.x <= 0:
-		starts = itertools.chain(starts, left_edge)
-	elif scan_vector.x > 0:
+	if scan_vector.x < 0:
 		starts = itertools.chain(starts, right_edge)
+	elif scan_vector.x > 0:
+		starts = itertools.chain(starts, left_edge)
 	#Do same for verticals
-	if scan_vector.y <= 0:
+	if scan_vector.y < 0:
 		starts = itertools.chain(starts, top_edge)
 	elif scan_vector.y > 0:
 		starts = itertools.chain(starts, bot_edge)
@@ -175,7 +175,7 @@ def getImageQRClusters(image, scan_vector):
 		group_sets = [groups[i:] for i in range(5)]
 		for scan_set in zip(*group_sets):
 			#Compute lengths of each seg
-			scan_lengths = [distance(*scan_part) for scan_part in scan_set]
+			scan_lengths = [scan_seg.length() for scan_seg in scan_set]
 			print(scan_lengths)
 			#Get length of first segnment as a  baseline to compare rest
 			base_len = scan_lengths[0]
@@ -186,10 +186,7 @@ def getImageQRClusters(image, scan_vector):
 			#Now check if all roughly equal
 			if all(kindaEquals(base_len, length) for length in scan_lengths):
 				center_set = scan_set[2]
-				#compute midpoint of center_set
-
-				center_mid = (x_avg, y_avg)
-				candidates.append(center_mid)
+				candidates.append(center_set.midpoint())
 
 	return candidates
 
@@ -212,6 +209,14 @@ def getMassQRClusters(image, num_vectors):
 
 	return qr_points
 
+def scanImage2(image):
+	all_points = getMassQRClusters(image, 2)
+	all_points = [p.asTuple() for p in all_points]
+	pgram = constructParallelograms(all_points)
+	return pgram
+
+
+#Quaruntine zone for that disgusting old scanImage
 def scanImage(image):
 	'''
 	@params

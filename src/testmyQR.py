@@ -24,7 +24,7 @@ print("testing diffColors with ", a," and ", b)
 print(myqr.diffColors(a,b))#should yield 3
 
 #test diffPoints
-print("\ntesting diffPoints with ", im.getpixel((10,10))," and ", im.getpixel((100,10)))
+#print("\ntesting diffPoints with ", im.getpixel((10,10))," and ", im.getpixel((100,10)))
 print(myqr.diffPoints(im, Point(10, 10), Point(100, 10)))
 
 print("\ntesting diffPoints with ", im2.getpixel((10,10))," and ", im2.getpixel((100,10)))
