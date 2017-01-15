@@ -111,7 +111,7 @@ def insertQR(image, bounds, data):
 def extrapolateParallelogram(a, b, c):
 	'''
 	@params:
-		a is one of the detected clusters in the image
+		a is one of the detected clusters in the image (as a point)
 		b ditto
 		c ditto
 	returns a list of four points representing vertices of parallelogram
@@ -119,10 +119,15 @@ def extrapolateParallelogram(a, b, c):
 	'''
 
 	def deduceKnownCorner(a, b, c): #Get points as (corner, another, another)
-		segs = ((a,b), (b,c), (a,c))
-		sorted_distance = sorted(segs, key=lambda seg: distance(seg[0], seg[1]))
+		segs = (Segment(a,b), Segment(b,c), Segment(a,c))
+		#Determine longest segment by sorting by lengths
+		sorted_distance = sorted(segs, key=lambda seg: seg.length())
 		longest_seg = sorted_distance[2]
-		return sorted((a,b,c), key=lambda p: p in longest_seg)
+
+		#Find the points in longest seg, sort by being in it
+		#Ascending sort will put remaining at back
+		ls_points = (longest_seg.p1, longest_seg.p2)
+		return sorted((a,b,c), key=lambda p: p in ls_points)
 
 	def orderByRotation(a, b, c): #Orders points of triangle clockwise. First point is anchor. Tuple of tuple-point
 		cp = deduceKnownCorner(a,b,c)
@@ -131,8 +136,8 @@ def extrapolateParallelogram(a, b, c):
 		b = cp[2]
 
 		#Get vectors from corner to each leg
-		v_corner_a = piecewiseMap(corner, a, lambda x,y: y - x)
-		v_corner_b = piecewiseMap(corner, b, lambda x,y: y - x)
+		v_corner_a = a - corner
+		v_corner_b = b - corner
 
 		#Find which comes vector 'first', clockwise from x axis
 		#Determined by which has lower clockwise angle
@@ -149,17 +154,20 @@ def extrapolateParallelogram(a, b, c):
 		corner = ordered_points[0]
 		leg1 = ordered_points[1]
 		leg2 = ordered_points[2]
-		vec_corner_leg1 = piecewiseMap(corner, leg1, lambda x,y: y - x)
+		vec_corner_leg1 = leg1 - corner
 
 		#Add this vec to leg2 to get final point of pgram.
-		return addTuples(leg2, vec_corner_leg1)
+		return leg2 + vec_corner_leg1
 
 	op = orderByRotation(a,b,c)
 	np = genThirdPoint(op)
 	parallelogram = (op[0], op[1], np, op[2])
-	offset = tuple(distance(x, (0,0)) for x in parallelogram)
-	offset = offset.index(min(offset))
-	return parallelogram[offset:] + parallelogram[:offset]
+
+	#Reorder to have first point be top-leftmost
+	origin = Point(0,0)
+	offsets = [origin.distance(x) for x in parallelogram]
+	closest_index = offsets.index(min(offsets))
+	return parallelogram[closest_index:] + parallelogram[:closest_index]
 
 def warpImage(background, image, parallelogram):
 	'''
