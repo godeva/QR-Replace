@@ -1,5 +1,6 @@
 import math
 from sklearn.cluster import AffinityPropagation
+from mathobjects import *
 
 def clockwiseRotation(from_v, to_v):
 	'''
@@ -44,7 +45,8 @@ def slope(p1, p2):
 	'''
 	return (p1.y-p2.y)/(p1.x-p2.x)
 
-
+'''
+???????????????????????????????????????????????????
 		#Cycle points
 		last_point = next_point
 		next_point = last_point + direction
@@ -52,7 +54,7 @@ def slope(p1, p2):
 	#Add last value to clusters
 	ret_vals += [Segment(cluster_start, last_point)]
 	return ret_vals
-
+'''
 
 def findQR(image):
 	'''
@@ -145,10 +147,10 @@ def expandParallelogram(parallelogram, amount):
 		**Note that parallelograms must be named starting from upper left
 		and proceed clockwise
 	'''
-	UL = addTuples(parallelogram[0], (-amount,-amount))
-	UR = addTuples(parallelogram[1], (amount,-amount))
-	LR = addTuples(parallelogram[2], (amount,amount))
-	LL = addTuples(parallelogram[3], (-amount,amount))
+	UL = parallelogram[0] + Point(-amount,-amount)
+	UR = parallelogram[1] + Point(amount,-amount)
+	LR = parallelogram[2] + Point(amount,amount)
+	LL = parallelogram[3] + Point(-amount,amount)
 
 	return (UL, UR, LR, LL)
 
@@ -163,7 +165,8 @@ def constructParallelograms(dataset):
 	clusters = []
 	count = 0
 	while (count < len(af.cluster_centers_)):
-		clusters += [af.cluster_centers_[count].tolist()]
+		pointlist = af.cluster_centers_[count].tolist()
+		clusters += [Point(pointlist[0], pointlist[1])]
 		count += 1
 
 	print(clusters)

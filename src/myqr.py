@@ -6,6 +6,7 @@ import numpy as np
 from numpy.linalg import inv
 import itertools
 from mathutil import *
+from mathobjects import *
 
 '''
 NOTE:
@@ -180,8 +181,8 @@ def warpImage(background, image, parallelogram):
 	returns a new image that is the composition of background and image
 	 	after image has been warped
 	'''
-	mapped = np.array([[parallelogram[0][0], parallelogram[1][0], parallelogram[2][0]],
-	[parallelogram[0][1], parallelogram[1][1], parallelogram[2][1]], [1,1,1]])
+	mapped = np.array([[parallelogram[0].x, parallelogram[1].x, parallelogram[2].x],
+	[parallelogram[0].y, parallelogram[1].y, parallelogram[2].y], [1,1,1]])
 
 	width, height = image.size
 	original = np.array([[0, width, width],[0, 0, height]])
@@ -217,14 +218,14 @@ def getImageQRClusters(image, scan_vector):
 	right_edge = (Point(width-1,  y) for y in range(height))
 
 	#If scan vector leftwards, need right edge. Etc.
-	if scan_vector[0] <= 0:
+	if scan_vector.x <= 0:
 		starts = itertools.chain(starts, left_edge)
-	elif scan_vector[0] > 0:
+	elif scan_vector.x > 0:
 		starts = itertools.chain(starts, right_edge)
 	#Do same for verticals
-	if scan_vector[1] <= 0:
+	if scan_vector.y <= 0:
 		starts = itertools.chain(starts, top_edge)
-	elif scan_vector[1] > 0:
+	elif scan_vector.y > 0:
 		starts = itertools.chain(starts, bot_edge)
 	#For each start point select candidates
 	for start in starts:
@@ -262,7 +263,7 @@ def getMassQRClusters(image, num_vectors):
 	'''
 	angle_delta = math.pi / num_vectors
 	vec_angles = [x*angle_delta for x in range(num_vectors)]
-	vectors = [(math.cos(theta), math.sin(theta)) for theta in vec_angles]
+	vectors = [Point(math.cos(theta), math.sin(theta)) for theta in vec_angles]
 
 	#Generate points for each vector
 	qr_points = []
